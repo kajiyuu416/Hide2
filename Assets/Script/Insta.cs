@@ -6,7 +6,7 @@ public class Insta : MonoBehaviour
 {
     [SerializeField] GameObject reproductionObj;
     [SerializeField] float limited = 5;
-    [SerializeField] float repCount = 0;
+    [SerializeField] static float repCount = 0;
     [SerializeField] RayCastCS RC;
 
     // Start is called before the first frame update
