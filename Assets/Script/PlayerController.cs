@@ -7,12 +7,15 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float MoveSpeed;
     [SerializeField] float JumpPower;
     [SerializeField] RayCastCS RC;
+    private string tagname;
     Rigidbody rigidbody;
     Vector3 input;
+
     // Start is called before the first frame update
     void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+        tagname = "candy";
     }
 
     // Update is called once per frame
@@ -40,5 +43,18 @@ public class PlayerController : MonoBehaviour
                 transform.rotation = Quaternion.Lerp(transform.rotation, QL, 15.0f * Time.deltaTime);
             }
         }
+    }
+    private void OnTriggerEnter(Collider collision)
+    {
+        if(Insta.count > 0)
+        {
+            if (collision.gameObject.tag == tagname)
+            {
+                Insta.count--;
+                Debug.Log("ï°êªâÒêîâÒïú");
+                Destroy(collision.gameObject);
+            }
+        }
+
     }
 }
