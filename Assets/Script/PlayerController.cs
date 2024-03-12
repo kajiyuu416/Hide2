@@ -46,11 +46,11 @@ public class PlayerController : MonoBehaviour
     }
     private void OnTriggerEnter(Collider collision)
     {
-        if(Insta.count > 0)
+        if(Insta.count < 5)
         {
             if (collision.gameObject.tag == tagname)
             {
-                Insta.count--;
+                Insta.count++;
                 Debug.Log("•¡»‰ñ”‰ñ•œ");
                 Destroy(collision.gameObject);
             }

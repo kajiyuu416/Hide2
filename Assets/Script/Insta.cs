@@ -6,10 +6,10 @@ using UnityEngine.UI;
 public class Insta : MonoBehaviour
 {
     [SerializeField] GameObject reproductionObj;
-    [SerializeField] float limited = 5;
     [SerializeField] RayCastCS RC;
     [SerializeField] Text rCount;
-    public static int count = 0;
+    public static int count = 5;
+    private int limited = 0;
 
     // Start is called before the first frame update
     void Start()
@@ -26,12 +26,24 @@ public class Insta : MonoBehaviour
         reproductionObj = RC.targetObj;
         rCount.text = count.ToString();
         if (reproductionObj!=null)
-        {
-            if (Input.GetKeyDown(KeyCode.C) && limited > count)
+        { 
+            if (count > limited)
             {
-                GameObject newObjct = Instantiate(reproductionObj, posi, transform.rotation);
-                count++;
+                rCount.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+                if(Input.GetKeyDown(KeyCode.C))
+                {
+                    GameObject newObjct = Instantiate(reproductionObj, posi, transform.rotation);
+                    count--;
+                }
             }
+
+            if (count == limited)
+            {
+                count = 0;
+                rCount.color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+            }
+
         }
+    
     }
 }
