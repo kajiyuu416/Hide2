@@ -1436,7 +1436,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   MoveSpeed: 5
-  JumpPower: 0
+  JumpPower: 5
   RC: {fileID: 840270531}
 --- !u!114 &840270530
 MonoBehaviour:
