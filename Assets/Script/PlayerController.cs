@@ -10,8 +10,7 @@ public class PlayerController : MonoBehaviour
     [SerializeField] RayCastCS RC;
     private string tagname;
     Rigidbody rigidbody;
-    private GameInputs gameInputs;
-    private Vector2 moveInputValue;
+    public Vector2 moveInputValue;
     Vector3 input;
 
     // Start is called before the first frame update
@@ -20,25 +19,11 @@ public class PlayerController : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         tagname = "candy";
-
-        gameInputs = new GameInputs();
-        gameInputs.Player.Move.started += OnMove;
-        gameInputs.Player.Move.performed += OnMove;
-        gameInputs.Player.Move.canceled += OnMove;
-        gameInputs.Player.Jump.performed += OnJump;
-
-        gameInputs.Enable();
     }
-    private void OnDestroy()
+
+    public void OnMove(InputValue var)
     {
-        // 自身でインスタンス化したActionクラスはIDisposableを実装しているので、
-        // 必ずDisposeする必要がある
-        gameInputs?.Dispose();
-    }
-    private void OnMove(InputAction.CallbackContext context)
-    {
-        // Moveアクションの入力取得
-        moveInputValue = context.ReadValue<Vector2>();
+        moveInputValue = var.Get<Vector2>();
     }
     private void OnJump(InputAction.CallbackContext context)
     {
@@ -57,12 +42,12 @@ public class PlayerController : MonoBehaviour
     }
     void FixedUpdate()
     {
-        input.x = Input.GetAxis("Horizontal");
-        input.z = Input.GetAxis("Vertical");
+        moveInputValue.x = Input.GetAxis("Horizontal");
+        moveInputValue.y = Input.GetAxis("Vertical");
         ////// カメラの方向から、X-Z平面の単位ベクトルを取得
         Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
         ////// 方向キーの入力値とカメラの向きから、移動方向を決定
-        Vector3 moveForward = cameraForward * input.z + Camera.main.transform.right * input.x;
+        Vector3 moveForward = cameraForward * moveInputValue.y + Camera.main.transform.right * moveInputValue.x;
         //// 移動方向の力を与える
         rigidbody.velocity = moveForward * MoveSpeed + new Vector3(
             moveInputValue.x,
