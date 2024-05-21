@@ -20,6 +20,7 @@ public class RayCastCS : MonoBehaviour
     {
         var current_GP = Gamepad.current;
         var change = current_GP.buttonEast;
+
         if (Input.GetMouseButtonDown(0) || change.wasPressedThisFrame) 
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
@@ -29,20 +30,13 @@ public class RayCastCS : MonoBehaviour
             {
                 if (hit.collider.CompareTag("metamorphosis"))
                 {
-                    metamorphosisFlag = true;
-                    targetMesh = hit.collider.GetComponent<Mesh>();
-                    targetRenderer_Mat = hit.collider.GetComponent<Renderer>().material;
-                    targetMF = hit.collider.GetComponent<MeshFilter>();
-                    targetMeshCollider_Mat = hit.collider.GetComponent<MeshCollider>().material;
-                    targetObj = hit.collider.gameObject;
-                    targetMesh = targetMF.mesh;
                     GetComponent<MeshFilter>().mesh = targetMF.mesh;
                     GetComponent<Renderer>().material = targetRenderer_Mat;
                     GetComponent<MeshCollider>().sharedMesh = targetMF.mesh;
                     GetComponent<MeshCollider>().material = targetMeshCollider_Mat;
+                    targetObj = hit.collider.gameObject;
                     transform.localScale = targetObj.transform.localScale;
-                    string name = hit.collider.gameObject.name;
-                    Debug.Log(name); // コンソールに表示
+                    metamorphosisFlag = true;
                 }
                 Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red, 5);
             }
@@ -63,11 +57,10 @@ public class RayCastCS : MonoBehaviour
         {
             if(raycastHit.collider.CompareTag("metamorphosis"))
             {
-                Mesh hitObj_mesh = raycastHit.collider.GetComponent<Mesh>();
-                GameObject hitObj = raycastHit.collider.gameObject;
-                Transform hitobj_transform = hitObj.GetComponent<Transform>();
-                Debug.Log(hitobj_transform);
-
+                targetRenderer_Mat = raycastHit.collider.GetComponent<Renderer>().material;
+                targetMF = raycastHit.collider.GetComponent<MeshFilter>();
+                targetMeshCollider_Mat = raycastHit.collider.GetComponent<MeshCollider>().material;
+                targetMesh = targetMF.mesh;
                 string name = raycastHit.collider.gameObject.name;
                 Debug.Log(name + "を選択に変身可能です"); // コンソールに表示
             }
