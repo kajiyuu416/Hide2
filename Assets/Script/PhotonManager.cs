@@ -9,9 +9,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] GameObject loadingPanel;
     [SerializeField] GameObject createRoomPalel;
+    [SerializeField] GameObject roomPanel;
     [SerializeField] GameObject Buttons;
     [SerializeField] TextMeshProUGUI loadingText;
     [SerializeField] TextMeshProUGUI enterRoomName;
+    [SerializeField] TextMeshProUGUI RoomName;
+    
     public static PhotonManager instance;
     private void Awake()
     {
@@ -35,6 +38,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         loadingPanel.SetActive(false);
         Buttons.SetActive(false);
         createRoomPalel.SetActive(false);
+        roomPanel.SetActive(false);
     }
     public void LobbyMenu()
     {
@@ -48,7 +52,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         loadingText.text = "ルームへ参加中...";
     }
 
-    //ロビー接続時のコールバック
+    //ロビー接続時に呼ばれる関数
     public override void OnJoinedLobby()
     {
         LobbyMenu();
@@ -74,4 +78,27 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             loadingPanel.SetActive(true);
         }
     }
+
+    //ルーム参加時に呼ばれる関数
+    public override void OnJoinedRoom()
+    {
+        CloseUI();
+        roomPanel.SetActive(true);
+        RoomName.text = PhotonNetwork.CurrentRoom.Name;
+    }
+
+    //ルーム退出の関数
+    public void LeavRoom()
+    {
+        PhotonNetwork.LeaveRoom();
+
+        CloseUI();
+        loadingText.text = "退出中...";
+        loadingPanel.SetActive(true);
+    }
+    public override void OnLeftRoom()
+    {
+        LobbyMenu();
+    }
+
 }
