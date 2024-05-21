@@ -1,49 +1,62 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.UI;
+using TMPro;
 
 public class Insta : MonoBehaviour
 {
     [SerializeField] GameObject reproductionObj;
-    [SerializeField] RayCastCS RC;
-    [SerializeField] Text rCount;
-    public static int count = 5;
-    private int limited = 0;
+    [SerializeField] RayCastCS rayCastCS;
+    [SerializeField] TextMeshProUGUI duplicate;
+    [SerializeField] TextMeshProUGUI rCount;
+    private int count = 5;
+    private const int Maxcount = 5;
+    private const int Mincount = 0;
 
-    // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
-        Vector3 posi = this.transform.position;
         reproductionObj = null;
         rCount.text = count.ToString();
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        Vector3 posi = this.transform.position;
-        reproductionObj = RC.targetObj;
-        rCount.text = count.ToString();
+        var current_GP = Gamepad.current;
+        var reproduction = current_GP.buttonWest;
+        Vector3 posi = transform.position;
+        reproductionObj = rayCastCS.targetObj;
+        duplicate.text = "•¡»‰ñ”  5 / " + count.ToString();
+
         if (reproductionObj!=null)
         { 
-            if (count > limited)
+            if (count > Mincount)
             {
-                rCount.color = new Color(1.0f, 1.0f, 1.0f, 1.0f);
-                if(Input.GetKeyDown(KeyCode.C))
+                rCount.color = Color.blue;
+                if(Input.GetKeyDown(KeyCode.C) || reproduction.wasPressedThisFrame)
                 {
                     GameObject newObjct = Instantiate(reproductionObj, posi, transform.rotation);
                     count--;
                 }
             }
 
-            if (count == limited)
+            if (count == Mincount)
             {
                 count = 0;
-                rCount.color = new Color(1.0f, 0.0f, 0.0f, 1.0f);
+                rCount.color = Color.red;
             }
 
         }
     
+    }
+    public int duplicate_Count
+    {
+        get
+        {
+            return count;
+        }
+        set
+        {
+            count = value;
+        }
     }
 }

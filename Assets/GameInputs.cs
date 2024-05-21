@@ -59,6 +59,17 @@ public partial class @GameInputs: IInputActionCollection2, IDisposable
                     ""isPartOfComposite"": false
                 },
                 {
+                    ""name"": """",
+                    ""id"": ""e50e14ca-c105-4316-bc30-8e2b14d3517f"",
+                    ""path"": ""<Joystick>/stick"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Move"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
                     ""name"": ""2D Vector"",
                     ""id"": ""9c6da1db-fe5f-48c8-ae71-eed1e23e9ecf"",
                     ""path"": ""2DVector"",

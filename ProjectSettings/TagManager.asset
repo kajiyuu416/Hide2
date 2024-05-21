@@ -6,6 +6,7 @@ TagManager:
   tags:
   - metamorphosis
   - candy
+  - ground
   layers:
   - Default
   - TransparentFX

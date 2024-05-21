@@ -1,25 +1,26 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.InputSystem;
 public class RayCastCS : MonoBehaviour
 {
-    [SerializeField] Mesh targetMesh;
-    [SerializeField] Material targetMat;
-    [SerializeField] MeshFilter targetMF;
-    [SerializeField] GameObject originObj;
-    public bool metamorphosisFlag = false;
     public GameObject targetObj;
-    private float originSize = 1.0f;
-    Rigidbody rigidbody;
+    private Mesh targetMesh;
+    private Material targetRenderer_Mat;
+    private PhysicMaterial targetMeshCollider_Mat;
+    private MeshFilter targetMF;
+    private Rigidbody rigidbody;
+    private bool metamorphosisFlag = false;
+
     private void Start()
     {
         rigidbody = GetComponent<Rigidbody>();
+
     }
-    void Update()
-    { // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
-      //
-        if (Input.GetMouseButtonDown(0)) 
+    // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
+    private void Update()
+    {
+        var current_GP = Gamepad.current;
+        var change = current_GP.buttonEast;
+        if (Input.GetMouseButtonDown(0) || change.wasPressedThisFrame) 
         {
             Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             RaycastHit hit;
@@ -29,17 +30,17 @@ public class RayCastCS : MonoBehaviour
                 if (hit.collider.CompareTag("metamorphosis"))
                 {
                     metamorphosisFlag = true;
-                    originObj.SetActive(false);
                     targetMesh = hit.collider.GetComponent<Mesh>();
-                    targetMat = hit.collider.GetComponent<Renderer>().material;
+                    targetRenderer_Mat = hit.collider.GetComponent<Renderer>().material;
                     targetMF = hit.collider.GetComponent<MeshFilter>();
+                    targetMeshCollider_Mat = hit.collider.GetComponent<MeshCollider>().material;
                     targetObj = hit.collider.gameObject;
                     targetMesh = targetMF.mesh;
                     GetComponent<MeshFilter>().mesh = targetMF.mesh;
-                    GetComponent<Renderer>().material = targetMat;
+                    GetComponent<Renderer>().material = targetRenderer_Mat;
                     GetComponent<MeshCollider>().sharedMesh = targetMF.mesh;
-                    this.transform.localScale = new Vector3(originSize, originSize, originSize);
-                    this.transform.localScale = targetObj.transform.localScale;
+                    GetComponent<MeshCollider>().material = targetMeshCollider_Mat;
+                    transform.localScale = targetObj.transform.localScale;
                     string name = hit.collider.gameObject.name;
                     Debug.Log(name); // コンソールに表示
                 }
@@ -50,6 +51,39 @@ public class RayCastCS : MonoBehaviour
         {
             rigidbody.constraints = RigidbodyConstraints.None;
         }
+    }
+
+    private void FixedUpdate()
+    {
+        Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+        RaycastHit raycastHit;
+
+        int Raydis2 = 20;
+        if(Physics.Raycast(raycast, out raycastHit))
+        {
+            if(raycastHit.collider.CompareTag("metamorphosis"))
+            {
+                Mesh hitObj_mesh = raycastHit.collider.GetComponent<Mesh>();
+                GameObject hitObj = raycastHit.collider.gameObject;
+                Transform hitobj_transform = hitObj.GetComponent<Transform>();
+                Debug.Log(hitobj_transform);
+
+                string name = raycastHit.collider.gameObject.name;
+                Debug.Log(name + "を選択に変身可能です"); // コンソールに表示
+            }
+            Debug.DrawRay(raycast.origin, raycast.direction * Raydis2, Color.green, 5);
+        }
+    }
+    public bool metamorphosisflag 
+    {
+        get
+        {
+            return metamorphosisFlag;
+        }
+        set
+        {
+            metamorphosisFlag = value;
+        } 
     }
 }
 

@@ -4,16 +4,20 @@ using UnityEngine;
 
 public class GameManager : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
+    [SerializeField] Texture2D cursor;
+
+    private void Start()
     {
-        Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        Cursor.SetCursor(cursor, new Vector2(cursor.width / 2, cursor.height / 2), CursorMode.ForceSoftware);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        
+        if(Input.GetKey(KeyCode.Escape))
+        {
+            Cursor.SetCursor(cursor, new Vector2(cursor.width / 2, cursor.height / 2), CursorMode.ForceSoftware);
+        }
     }
 }

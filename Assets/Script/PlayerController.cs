@@ -1,70 +1,86 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-
+using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float MoveSpeed;
     [SerializeField] float JumpPower;
-    [SerializeField] RayCastCS RC;
     private string tagname;
-    Rigidbody rigidbody;
-    public Vector2 moveInputValue;
-    Vector3 input;
-
-    // Start is called before the first frame update
-
+    private Rigidbody rigidbody;
+    private Insta insta;
+    private bool isJump;
+    private Vector3 PlayerMove_input;
+    public Vector2 leftStickVal;
+    public Vector2 RightStickVal;
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
         tagname = "candy";
+        insta = FindObjectOfType<Insta>();
     }
+    private void Update()
+    {
+        var current_GP = Gamepad.current;
+        var Jump = current_GP.buttonSouth;
+        if(Jump.wasPressedThisFrame &&isJump)
+        {
+            OnJump();
+        }
+    }
+    private void FixedUpdate()
+    {
+        PlayerMove_input.x = leftStickVal.x;
+        PlayerMove_input.z = leftStickVal.y;
 
-    public void OnMove(InputValue var)
-    {
-        moveInputValue = var.Get<Vector2>();
-    }
-    private void OnJump(InputAction.CallbackContext context)
-    {
-        // ジャンプする力を与える
-        rigidbody.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
-    }
-    void Start()
-    {
 
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
-    void FixedUpdate()
-    {
-        moveInputValue.x = Input.GetAxis("Horizontal");
-        moveInputValue.y = Input.GetAxis("Vertical");
-        ////// カメラの方向から、X-Z平面の単位ベクトルを取得
         Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
-        ////// 方向キーの入力値とカメラの向きから、移動方向を決定
-        Vector3 moveForward = cameraForward * moveInputValue.y + Camera.main.transform.right * moveInputValue.x;
-        //// 移動方向の力を与える
-        rigidbody.velocity = moveForward * MoveSpeed + new Vector3(
-            moveInputValue.x,
-            0,
-            moveInputValue.y);
+        Vector3 moveForward = cameraForward * PlayerMove_input.z + Camera.main.transform.right * PlayerMove_input.x;
+        rigidbody.velocity = moveForward * MoveSpeed + new Vector3(0, rigidbody.velocity.y, 0);
+
+        if(moveForward != Vector3.zero)
+        {
+          Quaternion QL = Quaternion.LookRotation(moveForward);
+          transform.rotation = Quaternion.Lerp(transform.rotation, QL, 15.0f * Time.deltaTime);
+        }
     }
     private void OnTriggerEnter(Collider collision)
     {
-        if(Insta.count < 5)
+        int count = insta.duplicate_Count;
+        if(count < 5)
         {
             if (collision.gameObject.tag == tagname)
             {
-                Insta.count++;
-                Debug.Log("複製回数回復");
+                insta.duplicate_Count++;
                 Destroy(collision.gameObject);
+                Debug.Log("複製回数回復");
             }
         }
+    }
+    private void OnCollisionStay(Collision collision)
+    {
+        if(collision.gameObject.tag == "ground")
+        {
+            isJump= true;
+        }
+    }
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject.tag == "ground")
+        {
+            isJump = false;
+        }
+    }
+    private void OnMove(InputValue var)
+    {
+        leftStickVal = var.Get<Vector2>();
+    }
+    private void OnCamera(InputValue var)
+    {
+        RightStickVal = var.Get<Vector2>();
+    }
 
+    private void OnJump()
+    {
+        rigidbody.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
     }
 }
