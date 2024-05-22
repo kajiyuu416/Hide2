@@ -53,6 +53,7 @@ public class RayCastCS : MonoBehaviour
         RaycastHit raycastHit;
 
         int Raydis2 = 20;
+
         if(Physics.Raycast(raycast, out raycastHit))
         {
             if(raycastHit.collider.CompareTag("metamorphosis"))
