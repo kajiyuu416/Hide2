@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.XR;
 
 public class PlayerCamera : MonoBehaviour
 {
@@ -26,7 +27,7 @@ public class PlayerCamera : MonoBehaviour
         rayCastCS = FindObjectOfType<RayCastCS>();
     }
     // Update is called once per frame
-    private void Update()
+    private void FixedUpdate()
     {
         transform.position += Player.transform.position - targetPos;
         targetPos = Player.transform.position;
@@ -34,6 +35,12 @@ public class PlayerCamera : MonoBehaviour
         var rotY = PC.RightStickVal.y * Time.deltaTime * RotationSensitivity;
         var lookAt = Player.transform.position + Vector3.up * HeightM;
         bool metamorphosisflag = rayCastCS.metamorphosisflag;
+        if(GameManager.Non_control)
+        {
+            rotX = 0;
+            rotY = 0;
+        }
+
         transform.RotateAround(lookAt, Vector3.up, rotX);
         if (transform.forward.y > UpperLimit && rotY < 0)
         {
@@ -43,10 +50,11 @@ public class PlayerCamera : MonoBehaviour
         {
             rotY = 0;
         }
-        transform.RotateAround(lookAt, transform.right, rotY);
+        transform.RotateAround(lookAt, -transform.right, rotY);
         transform.position = lookAt - transform.forward * DistanceToPlayerM;
         transform.LookAt(lookAt);
         transform.position = transform.position + transform.right * SlideDistanceM;
+
         if (metamorphosisflag)
         {
             DistanceToPlayerM = 8.0f;
