@@ -21,11 +21,18 @@ public class PlayerController : MonoBehaviour
     private void Update()
     {
         var current_GP = Gamepad.current;
-        var Jump = current_GP.buttonSouth;
-        if(Jump.wasPressedThisFrame &&isJump)
+        var current_KB = Keyboard.current;
+        var Jump_KB = current_KB.spaceKey;
+        var Jump_GP = current_GP.buttonSouth;
+
+        if(isJump)
         {
-            OnJump();
+            if(Jump_GP.wasPressedThisFrame || Jump_KB.wasPressedThisFrame)
+            {
+                OnJump();
+            }
         }
+
     }
     private void FixedUpdate()
     {

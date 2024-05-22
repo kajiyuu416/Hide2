@@ -187,17 +187,6 @@
                     "action": "Camera",
                     "isComposite": false,
                     "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "ba8e0d3f-1452-4217-8c1d-040f26b16bdb",
-                    "path": "<Mouse>/delta",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": "Keyboard&Mouse",
-                    "action": "Camera",
-                    "isComposite": false,
-                    "isPartOfComposite": false
                 }
             ]
         },
