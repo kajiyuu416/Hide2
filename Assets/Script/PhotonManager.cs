@@ -10,10 +10,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject loadingPanel;
     [SerializeField] GameObject createRoomPalel;
     [SerializeField] GameObject roomPanel;
+    [SerializeField] GameObject erroePanel;
     [SerializeField] GameObject Buttons;
     [SerializeField] TextMeshProUGUI loadingText;
     [SerializeField] TextMeshProUGUI enterRoomName;
     [SerializeField] TextMeshProUGUI RoomName;
+    [SerializeField] TextMeshProUGUI errorText;
     
     public static PhotonManager instance;
     private void Awake()
@@ -32,6 +34,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
     }
 
+   
+
     //UI表示、非表示
     public void CloseUI()
     {
@@ -39,6 +43,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         Buttons.SetActive(false);
         createRoomPalel.SetActive(false);
         roomPanel.SetActive(false);
+        erroePanel.SetActive(false);
     }
     public void LobbyMenu()
     {
@@ -99,6 +104,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnLeftRoom()
     {
         LobbyMenu();
+    }
+
+    public override void OnCreateRoomFailed(short returnCode, string message)
+    {
+        CloseUI();
+        errorText.text = "ルームの作成に失敗しました" + message;
+        erroePanel.SetActive(true);
     }
 
 }
