@@ -1,3 +1,4 @@
+using Photon.Pun.Demo.PunBasics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -5,7 +6,7 @@ using UnityEngine.InputSystem;
 
 public class PlayerCamera : MonoBehaviour
 {
-    [SerializeField] GameObject Player;
+    [SerializeField] Transform Player;
     [SerializeField] PlayerController PC;
     public float DistanceToPlayerM = 2.0f;    // カメラとプレイヤーとの距離[m]
     public float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
@@ -26,29 +27,26 @@ public class PlayerCamera : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-        transform.position += Player.transform.position - targetPos;
-        targetPos = Player.transform.position;
         var rotX = PC.RightStickVal.x * Time.deltaTime * RotationSensitivity;
         var rotY = PC.RightStickVal.y * Time.deltaTime * RotationSensitivity;
         var lookAt = Player.transform.position + Vector3.up * HeightM;
-        var UpperLimit = 0.3f;
-        var LowerLimit = -0.8f;
+        float upper_limit = 0.2f;
+        float lower_limit = -0.8f;
         bool metamorphosisflag = rayCastCS.metamorphosisflag;
 
         transform.RotateAround(lookAt, Vector3.up, rotX);
 
-        if(transform.forward.y > UpperLimit)
+        if(transform.forward.y > upper_limit && rotY < 0)
         {
             rotY = 0;
         }
-        if(transform.forward.y < LowerLimit)
-        {
-            rotY = 0;
-        }
-        transform.RotateAround(lookAt, -transform.right, rotY);
 
+        if(transform.forward.y < lower_limit && rotY > 0)
+        {
+            rotY = 0;
+        }
+        transform.RotateAround(lookAt, transform.right, rotY);
         transform.position = lookAt - transform.forward * DistanceToPlayerM;
-        transform.LookAt(lookAt);
         transform.position = transform.position + transform.right * SlideDistanceM;
 
         if (metamorphosisflag)
