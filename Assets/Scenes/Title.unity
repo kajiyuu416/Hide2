@@ -381,7 +381,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 76c392e42b5098c458856cdf6ecaaaa1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  m_FirstSelected: {fileID: 0}
+  m_FirstSelected: {fileID: 1103597734095050108}
   m_sendNavigationEvents: 1
   m_DragThreshold: 10
 --- !u!4 &85323335
@@ -1485,6 +1485,7 @@ MonoBehaviour:
   roomButtonContent: {fileID: 1372144096}
   playerNameContent: {fileID: 334000487}
   nameInputPanel: {fileID: 817925039}
+  startButton: {fileID: 6823670236178582983}
   loadingText: {fileID: 1368311103}
   enterRoomName: {fileID: 1297906815}
   RoomName: {fileID: 903118137}
@@ -1493,6 +1494,7 @@ MonoBehaviour:
   placeholderText: {fileID: 940392344}
   nameInput: {fileID: 1642127748}
   originalRoomButton: {fileID: 5211538449464812213, guid: dedbbe8af5fe6c14780c1a07699d993a, type: 3}
+  PlayScene: Main
 --- !u!1 &334000487
 GameObject:
   m_ObjectHideFlags: 0
@@ -3842,7 +3844,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u200B"
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 347237e46b898ca4b99f4d26c13d3e5e, type: 2}
   m_sharedMaterial: {fileID: -1657967424591864309, guid: 347237e46b898ca4b99f4d26c13d3e5e, type: 2}
@@ -4210,7 +4212,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "\u9000\u51FA"
+  m_text: "\u30BF\u30A4\u30C8\u30EB\u3078\u623B\u308B"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 347237e46b898ca4b99f4d26c13d3e5e, type: 2}
   m_sharedMaterial: {fileID: -1657967424591864309, guid: 347237e46b898ca4b99f4d26c13d3e5e, type: 2}
@@ -5960,7 +5962,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2815946009529032837}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 276900656}
+        m_TargetAssemblyTypeName: PhotonManager, Assembly-CSharp
+        m_MethodName: PlayeGame
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &7670146194239226941
 MonoBehaviour:
   m_ObjectHideFlags: 0

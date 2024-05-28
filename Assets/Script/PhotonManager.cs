@@ -16,6 +16,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomButtonContent;
     [SerializeField] GameObject playerNameContent;
     [SerializeField] GameObject nameInputPanel;
+    [SerializeField] GameObject startButton;
     [SerializeField] TextMeshProUGUI loadingText;
     [SerializeField] TextMeshProUGUI enterRoomName;
     [SerializeField] TextMeshProUGUI RoomName;
@@ -24,14 +25,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] TextMeshProUGUI placeholderText;
     [SerializeField] TMP_InputField nameInput;
     [SerializeField] Room originalRoomButton;
-
+    [SerializeField] string PlayScene;
 
     private Dictionary<string,RoomInfo> roomsList = new Dictionary<string, RoomInfo>();
     private List<Room> allRoomButtons = new List<Room>();
     private List<TextMeshProUGUI> allPlayerNames = new List<TextMeshProUGUI>();
     private bool setName;
-
-
 
     public static PhotonManager instance;
     private void Awake()
@@ -48,8 +47,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.ConnectUsingSettings();
         }
-    }
 
+    }
+    private void Update()
+    {
+        Debug.Log(enterRoomName.text);
+    }
     //UI表示、非表示
     public void CloseUI()
     {
@@ -71,6 +74,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
         loadingText.text = "ルームへ参加中...";
+
+        //ホストと同じシーンを読み込み
+        PhotonNetwork.AutomaticallySyncScene = true;
     }
 
     //ロビー接続時に呼ばれる関数
@@ -88,29 +94,34 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         createRoomPalel.SetActive(true);
     }
 
+
+    //todo::ルーム名が空の状態でも、ルームが作成できてしまう為、空の状態では作成できないようにする
     public void CreateloomButton()
     {
+        //  ルーム製作   
         if(!string.IsNullOrEmpty(enterRoomName.text))
         {
             RoomOptions options = new RoomOptions();
-            options.MaxPlayers = 5;
-
-            //  ルーム製作   
+            options.MaxPlayers = 4;
             PhotonNetwork.CreateRoom(enterRoomName.text, options);
             CloseUI();
-
+            Debug.Log(enterRoomName.text);
             loadingText.text = "ルーム作成中...";
             loadingPanel.SetActive(true);
         }
     }
 
     //ルーム参加時に呼ばれる関数
+    //ルームにいるプレイヤーの情報取得
     public override void OnJoinedRoom()
     {
         CloseUI();
         roomPanel.SetActive(true);
         RoomName.text = PhotonNetwork.CurrentRoom.Name;
+
         GetAllPlayer();
+
+        CheckRoomHost();
     }
 
     //ルーム退出の関数
@@ -253,6 +264,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             else
             {
                 PhotonNetwork.NickName = PlayerPrefs.GetString("playerName");
+                Debug.Log("名前はすでに決まっています。");
             }
         }
     }
@@ -262,13 +274,16 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         if(!string.IsNullOrEmpty(nameInput.text))
         {
-            PhotonNetwork.NickName = nameInput.text;
 
+            if(nameInput.text.Length > 5)
+            {
+                nameInput.text = nameInput.text[..5];
+            }
+            PhotonNetwork.NickName = nameInput.text;
             PlayerPrefs.SetString("playerName", nameInput.text);
             LobbyMenu();
             setName = true;
         }
-
     }
     //プレイヤーが入室した時に呼ばれる関数
     public override void OnPlayerEnteredRoom(Player newPlayer)
@@ -279,5 +294,30 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         GetAllPlayer();
+    }
+    //ホストのみゲームが開始できる表ボタンの表示
+    public void CheckRoomHost()
+    {
+        if(PhotonNetwork.IsMasterClient)
+        {
+            startButton.SetActive(true);
+        }
+        else
+        {
+            startButton.SetActive(false);
+        }
+    }
+    //ホストが切り替わった時
+    public override void OnMasterClientSwitched(Player newMasterClient)
+    {
+        if(PhotonNetwork.IsMasterClient)
+        {
+            startButton.SetActive(true);
+        }
+    }
+    //ゲーム開始時呼ばれる関数
+    public void PlayeGame()
+    {
+        PhotonNetwork.LoadLevel(PlayScene);
     }
 }
