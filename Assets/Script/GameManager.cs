@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.XR;
 
 public class GameManager : MonoBehaviour
@@ -18,6 +19,9 @@ public class GameManager : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+        var current_GP = Gamepad.current;
+
+        var onClick = current_GP.buttonEast;
         if(Input.GetMouseButtonDown(0) || Input.GetMouseButtonDown(1))
         {
             Cursor.lockState = CursorLockMode.Locked;
