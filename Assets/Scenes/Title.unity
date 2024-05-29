@@ -819,17 +819,17 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
+  m_ContentType: 5
   m_InputType: 0
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 5
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 0
+  m_CharacterLimit: 5
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []
@@ -1487,12 +1487,12 @@ MonoBehaviour:
   nameInputPanel: {fileID: 817925039}
   startButton: {fileID: 6823670236178582983}
   loadingText: {fileID: 1368311103}
-  enterRoomName: {fileID: 1297906815}
   RoomName: {fileID: 903118137}
   errorText: {fileID: 1131365642}
   playerNameText: {fileID: 1692661406253641035, guid: c88953e868bc2ad489b9b47b8a6045e1, type: 3}
   placeholderText: {fileID: 940392344}
   nameInput: {fileID: 1642127748}
+  enterRoomName: {fileID: 214369265}
   originalRoomButton: {fileID: 5211538449464812213, guid: dedbbe8af5fe6c14780c1a07699d993a, type: 3}
   PlayScene: Main
 --- !u!1 &334000487
@@ -4480,7 +4480,7 @@ GameObject:
   - component: {fileID: 1642127749}
   - component: {fileID: 1642127748}
   m_Layer: 5
-  m_Name: RoomNameInputField
+  m_Name: PlayerNameInputField
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -4534,17 +4534,17 @@ MonoBehaviour:
   m_VerticalScrollbarEventHandler: {fileID: 0}
   m_LayoutGroup: {fileID: 0}
   m_ScrollSensitivity: 1
-  m_ContentType: 0
+  m_ContentType: 5
   m_InputType: 0
   m_AsteriskChar: 42
   m_KeyboardType: 0
   m_LineType: 0
   m_HideMobileInput: 0
   m_HideSoftKeyboard: 0
-  m_CharacterValidation: 0
+  m_CharacterValidation: 5
   m_RegexValue: 
   m_GlobalPointSize: 14
-  m_CharacterLimit: 0
+  m_CharacterLimit: 10
   m_OnEndEdit:
     m_PersistentCalls:
       m_Calls: []

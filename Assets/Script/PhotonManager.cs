@@ -18,12 +18,12 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject nameInputPanel;
     [SerializeField] GameObject startButton;
     [SerializeField] TextMeshProUGUI loadingText;
-    [SerializeField] TextMeshProUGUI enterRoomName;
     [SerializeField] TextMeshProUGUI RoomName;
     [SerializeField] TextMeshProUGUI errorText;
     [SerializeField] TextMeshProUGUI playerNameText;
     [SerializeField] TextMeshProUGUI placeholderText;
     [SerializeField] TMP_InputField nameInput;
+    [SerializeField] TMP_InputField enterRoomName;
     [SerializeField] Room originalRoomButton;
     [SerializeField] string PlayScene;
 
@@ -47,12 +47,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.ConnectUsingSettings();
         }
+    }
 
-    }
-    private void Update()
-    {
-        Debug.Log(enterRoomName.text);
-    }
     //UI表示、非表示
     public void CloseUI()
     {
@@ -93,9 +89,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         CloseUI();
         createRoomPalel.SetActive(true);
     }
-
-
     //todo::ルーム名が空の状態でも、ルームが作成できてしまう為、空の状態では作成できないようにする
+    //textの状態ではからの状態で作成できてしまうため、TmpInputFieldへ変更することで
+
     public void CreateloomButton()
     {
         //  ルーム製作   
@@ -105,7 +101,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             options.MaxPlayers = 4;
             PhotonNetwork.CreateRoom(enterRoomName.text, options);
             CloseUI();
-            Debug.Log(enterRoomName.text);
+            Debug.Log(enterRoomName.text + "");
             loadingText.text = "ルーム作成中...";
             loadingPanel.SetActive(true);
         }
@@ -275,9 +271,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         if(!string.IsNullOrEmpty(nameInput.text))
         {
 
-            if(nameInput.text.Length > 5)
+            if(nameInput.text.Length > 10)
             {
-                nameInput.text = nameInput.text[..5];
+                nameInput.text = nameInput.text[..10];
             }
             PhotonNetwork.NickName = nameInput.text;
             PlayerPrefs.SetString("playerName", nameInput.text);
