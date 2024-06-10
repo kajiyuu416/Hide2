@@ -3,20 +3,24 @@ using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField] float MoveSpeed;
-    [SerializeField] float JumpPower;
-    private string tagname;
-    private Rigidbody rigidbody;
+    [SerializeField] float moveSpeed;
+    [SerializeField] float jumpPower;
     private Insta insta;
-    public int jump_frequency;
+    private string tagname = "candy";
+    private int jump_frequency;
     private const int frequency = 1;
-    private Vector3 PlayerMove_input;
-    public Vector2 leftStickVal;
-    public Vector2 RightStickVal;
+    private bool isjump;
+    private bool isfall;
+    private Vector3 playerMove_input;
+    private Vector2 leftStickVal;
+    private Vector2 rightStickVal;
+    private Rigidbody rigidbody;
+    private Animator animator;
     private void Awake()
     {
         rigidbody = GetComponent<Rigidbody>();
-        tagname = "candy";
+        animator = GetComponent<Animator>();
+
         insta = FindObjectOfType<Insta>();
     }
     private void Update()
@@ -62,6 +66,8 @@ public class PlayerController : MonoBehaviour
             if(collision.gameObject.tag == "ground")
             {
                 jump_frequency = frequency;
+                isjump = false;
+                isfall = false;
             }
         }
     }
@@ -69,25 +75,36 @@ public class PlayerController : MonoBehaviour
 
     private void PlayerMove()
     {
-        PlayerMove_input.x = leftStickVal.x;
-        PlayerMove_input.z = leftStickVal.y;
+        playerMove_input.x = leftStickVal.x;
+        playerMove_input.z = leftStickVal.y;
         Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
-        Vector3 moveForward = cameraForward * PlayerMove_input.z + Camera.main.transform.right * PlayerMove_input.x;
-        rigidbody.velocity = moveForward * MoveSpeed + new Vector3(0, rigidbody.velocity.y, 0);
+        Vector3 moveForward = cameraForward * playerMove_input.z + Camera.main.transform.right * playerMove_input.x;
+        var velocity = new Vector3(playerMove_input.x, 0, playerMove_input.z).normalized;
+        rigidbody.velocity = moveForward * moveSpeed + new Vector3(0, rigidbody.velocity.y, 0);
+        const int falldis = -2;
 
         if(moveForward != Vector3.zero)
         {
             Quaternion QL = Quaternion.LookRotation(moveForward);
-            transform.rotation = Quaternion.Lerp(transform.rotation, QL, 15.0f * Time.deltaTime);
+            transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
         }
+        if(rigidbody.velocity.y < falldis)
+        {
+            isfall = true;
+            isjump = false;
+        }
+        animator.SetFloat("movespeed",velocity.magnitude, 0.1f, Time.deltaTime);
+        animator.SetBool("isfall", isfall);
+        animator.SetBool("isjump", isjump);
+
     }
+    //ジャンプキーが押され、ジャンプができる状態であればジャンプを行う
     private void Player_Jump()
     {
         var current_GP = Gamepad.current;
         var current_KB = Keyboard.current;
         var Jump_KB = current_KB.spaceKey;
         var Jump_GP = current_GP.buttonSouth;
-
         int max_frequency = 1;
         int min_frequency = 0;
 
@@ -101,6 +118,7 @@ public class PlayerController : MonoBehaviour
             }
         }
 
+        //ジャンプ回数の制限
         if(jump_frequency > max_frequency)
         {
             jump_frequency = max_frequency;
@@ -118,11 +136,20 @@ public class PlayerController : MonoBehaviour
     }
     private void OnCamera(InputValue var)
     {
-        RightStickVal = var.Get<Vector2>();
+        rightStickVal = var.Get<Vector2>();
     }
 
+    //ジャンプ時呼ばれる関数
     private void OnJump()
     {
-        rigidbody.AddForce(Vector3.up * JumpPower, ForceMode.Impulse);
+        rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
+        isjump = true;
+    }
+    public Vector2 Duplicate_rightStickVal
+    {
+        get
+        {
+            return rightStickVal;
+        }
     }
 }
