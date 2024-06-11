@@ -4,142 +4,79 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
-    [SerializeField] float jumpPower;
-    private Insta insta;
-    private string tagname = "candy";
-    private int jump_frequency;
-    private const int frequency = 1;
-    private bool isjump;
+    private CharacterController characterController;
+    private float gravity = -9.8f;
+    private float JumpPower = 6.0f;
+    float movedirY;
     private bool isfall;
-    public bool isground;
     private Vector3 playerMove_input;
     private Vector2 leftStickVal;
     private Vector2 rightStickVal;
-    private Rigidbody rigidbody;
+    Vector3 movedir = Vector3.zero;
     private Animator animator;
+    private PlayerInput playerInput;
+
+    private const string gamepad = "Gamepad";
+    private const string keyboard_mouse = "Keyboard&Mouse";
+
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody>();
         animator = GetComponent<Animator>();
-
-        insta = FindObjectOfType<Insta>();
+        characterController = GetComponent<CharacterController>();
+        playerInput = GetComponent<PlayerInput>();
     }
     private void Update()
     {
-        Player_Jump();
-    }
-    private void FixedUpdate()
-    {
         PlayerMove();
-    }
-    private void OnTriggerEnter(Collider collision)
-    {
-        int count = insta.duplicate_Count;
-        if(count < 5)
+
+        if(playerInput.currentControlScheme.ToString() == gamepad)
         {
-            if (collision.gameObject.tag == tagname)
-            {
-                insta.duplicate_Count++;
-                Destroy(collision.gameObject);
-                Debug.Log("複製回数回復");
-            }
+            Debug.Log("gamepad");
+        }
+        if(playerInput.currentControlScheme.ToString() == keyboard_mouse)
+        {
+            Debug.Log("keyboard&Mouse");
         }
     }
-
-    private void OnCollisionEnter(Collision collision)
-    {
-        if(collision.gameObject.tag == "metamorphosis")
-        {
-            jump_frequency++;
-        }
-
-        if(collision.gameObject.tag == "ground")
-        {
-            jump_frequency = frequency;
-            isground = true;
-        }
-
-    }
-
-    private void OnCollisionStay(Collision collision)
-    {
-        if(jump_frequency > 0)
-        {
-            if(collision.gameObject.tag == "ground")
-            {
-                jump_frequency = frequency;
-                isjump = false;
-                isfall = false;
-                isground = true;
-            }
-        }
-    }
-
-    private void OnCollisionExit(Collision collision)
-    {
-        if(collision.gameObject.tag == "ground")
-        {
-            isground = false;
-        }
-    }
-
-
     private void PlayerMove()
     {
         playerMove_input.x = leftStickVal.x;
         playerMove_input.z = leftStickVal.y;
         Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
         Vector3 moveForward = cameraForward * playerMove_input.z + Camera.main.transform.right * playerMove_input.x;
-        var velocity = new Vector3(playerMove_input.x, 0, playerMove_input.z).normalized;
-        rigidbody.velocity = moveForward * moveSpeed + new Vector3(0, rigidbody.velocity.y, 0);
-        const int falldis = -5;
+        movedir = moveForward * moveSpeed;
+        movedirY += Physics.gravity.y * Time.deltaTime;
+        Vector3 globaldir = transform.TransformDirection(movedir);
+        characterController.Move(new Vector3(movedir.x, movedirY, movedir.z) * Time.deltaTime);
 
+        var current_gamepad = Gamepad.current;
+        var current_keyboard = Keyboard.current;
+        var Jump_KB = current_keyboard.spaceKey;
+        var Jump_GP = current_gamepad.buttonSouth;
+
+        if(characterController.isGrounded)
+        {
+            movedirY = gravity;
+            isfall = false;
+            if(Jump_GP.wasPressedThisFrame || Jump_KB.wasPressedThisFrame)
+            {
+                movedirY = JumpPower;
+            }
+        }
+
+        if(movedirY > -5 || movedirY <= -10)
+        {
+            isfall = true;
+        }
+
+        //繧ｭ繝｣繝ｩ繧ｯ繧ｿ繝ｼ縺ｮ蝗櫁ｻ｢
         if(moveForward != Vector3.zero)
         {
             Quaternion QL = Quaternion.LookRotation(moveForward);
             transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
         }
-
-        if(rigidbody.velocity.y < falldis && !isground)
-        {
-            isfall = true;
-            isjump = false;
-        }
-        animator.SetFloat("movespeed",velocity.magnitude, 0.1f, Time.deltaTime);
+        animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
-        animator.SetBool("isjump", isjump);
-
-    }
-    //ジャンプキーが押され、ジャンプができる状態であればジャンプを行う
-    private void Player_Jump()
-    {
-        var current_GP = Gamepad.current;
-        var current_KB = Keyboard.current;
-        var Jump_KB = current_KB.spaceKey;
-        var Jump_GP = current_GP.buttonSouth;
-        int max_frequency = 1;
-        int min_frequency = 0;
-
-        if(jump_frequency >= frequency)
-        {
-
-            if(Jump_GP.wasPressedThisFrame || Jump_KB.wasPressedThisFrame)
-            {
-                jump_frequency--;
-                OnJump();
-            }
-        }
-
-        //ジャンプ回数の制限
-        if(jump_frequency > max_frequency)
-        {
-            jump_frequency = max_frequency;
-        }
-
-        if(jump_frequency <= min_frequency)
-        {
-            jump_frequency = min_frequency;
-        }
     }
 
     private void OnMove(InputValue var)
@@ -151,12 +88,6 @@ public class PlayerController : MonoBehaviour
         rightStickVal = var.Get<Vector2>();
     }
 
-    //ジャンプ時呼ばれる関数
-    private void OnJump()
-    {
-        rigidbody.AddForce(Vector3.up * jumpPower, ForceMode.Impulse);
-        isjump = true;
-    }
     public Vector2 Duplicate_rightStickVal
     {
         get

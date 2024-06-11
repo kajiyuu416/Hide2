@@ -8,10 +8,10 @@ public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] Transform player;
     private PlayerController playerController;
-    public float DistanceToPlayerM = 2.0f;    // カメラとプレイヤーとの距離[m]
+    private const float distanceToPlayerM = 6.0f;    // カメラとプレイヤーとの距離[m]
+    private const float heightM = 1.3f;            // 注視点の高さ[m]          // 注視点の高さ[m]
     public float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
-    public float HeightM = 1.2f;            // 注視点の高さ[m]          // 注視点の高さ[m]
-    public float RotationSensitivity = 100.0f;// 感度
+    private float RotationSensitivity = 300.0f;// 感度
     Vector3 targetPos;
     private RayCastCS rayCastCS;
     private void Start()
@@ -26,11 +26,11 @@ public class PlayerCamera : MonoBehaviour
         playerController = FindObjectOfType<PlayerController>();
     }
     // Update is called once per frame
-    private void FixedUpdate()
+    private void LateUpdate()
     {
         var rotX = playerController.Duplicate_rightStickVal.x * Time.deltaTime * RotationSensitivity;
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * RotationSensitivity;
-        var lookAt = player.transform.position + Vector3.up * HeightM;
+        var lookAt = player.transform.position + Vector3.up * heightM;
         float upper_limit = 0.2f;
         float lower_limit = -0.8f;
         bool metamorphosisflag = rayCastCS.metamorphosisflag;
@@ -47,13 +47,8 @@ public class PlayerCamera : MonoBehaviour
             rotY = 0;
         }
         transform.RotateAround(lookAt, transform.right, rotY);
-        transform.position = lookAt - transform.forward * DistanceToPlayerM;
+        transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
-
-        if (metamorphosisflag)
-        {
-            DistanceToPlayerM = 8.0f;
-        }
 
         if(GameManager.Non_control)
         {

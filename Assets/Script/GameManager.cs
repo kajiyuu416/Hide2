@@ -8,7 +8,6 @@ public class GameManager : MonoBehaviour
 {
     [SerializeField] Texture2D cursor;
     public static bool Non_control;
-
     private void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
