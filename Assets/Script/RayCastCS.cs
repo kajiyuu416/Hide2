@@ -2,7 +2,9 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 public class RayCastCS : MonoBehaviour
 {
-    public GameObject targetObj;
+    [SerializeField] GameObject rayHitObject;
+    public GameObject objctacleRayObject;
+    public LayerMask layerMask;
     private Mesh targetMesh;
     private Material targetRenderer_Mat;
     private PhysicMaterial targetMeshCollider_Mat;
@@ -23,51 +25,59 @@ public class RayCastCS : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0) || change.wasPressedThisFrame) 
         {
-            Ray ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            RaycastHit hit;
-            int Raydis = 20;
-            if (Physics.Raycast(ray, out hit))
-            {
-                if (hit.collider.CompareTag("metamorphosis"))
-                {
-                    GetComponent<MeshFilter>().mesh = targetMF.mesh;
-                    GetComponent<Renderer>().material = targetRenderer_Mat;
-                    GetComponent<MeshCollider>().sharedMesh = targetMF.mesh;
-                    GetComponent<MeshCollider>().material = targetMeshCollider_Mat;
-                    targetObj = hit.collider.gameObject;
-                    transform.localScale = targetObj.transform.localScale;
-                    metamorphosisFlag = true;
-                }
-                Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red, 5);
-            }
+            //Ray ray = Physics.Raycast(objctacleRayObject.transform.position,Vector3.up,out);
+
+            //RaycastHit hit;
+            //int Raydis = 20;
+            //if (Physics.Raycast(ray, out hit))
+            //{
+            //    if (hit.collider.CompareTag("metamorphosis"))
+            //    {
+            //        GetComponent<MeshFilter>().mesh = targetMF.mesh;
+            //        GetComponent<Renderer>().material = targetRenderer_Mat;
+            //        GetComponent<MeshCollider>().sharedMesh = targetMF.mesh;
+            //        GetComponent<MeshCollider>().material = targetMeshCollider_Mat;
+            //        rayHitObject = hit.collider.gameObject;
+            //        transform.localScale = rayHitObject.transform.localScale;
+            //        metamorphosisFlag = true;
+            //    }
+            //    Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red, 5);
+            //}
+
         }
         if (metamorphosisFlag)
         {
             rigidbody.constraints = RigidbodyConstraints.None;
         }
-    }
 
-    private void FixedUpdate()
-    {
-        Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
-        RaycastHit raycastHit;
-
-        int Raydis2 = 20;
-
-        if(Physics.Raycast(raycast, out raycastHit))
+        if(Physics.Raycast(objctacleRayObject.transform.position, transform.TransformDirection(Vector3.forward), 10))
         {
-            if(raycastHit.collider.CompareTag("metamorphosis"))
-            {
-                targetRenderer_Mat = raycastHit.collider.GetComponent<Renderer>().material;
-                targetMF = raycastHit.collider.GetComponent<MeshFilter>();
-                targetMeshCollider_Mat = raycastHit.collider.GetComponent<MeshCollider>().material;
-                targetMesh = targetMF.mesh;
-                string name = raycastHit.collider.gameObject.name;
-                Debug.Log(name + "を選択に変身可能です"); // コンソールに表示
-            }
-            Debug.DrawRay(raycast.origin, raycast.direction * Raydis2, Color.green, 5);
+            Debug.DrawRay(objctacleRayObject.transform.position, Vector3.forward, Color.red);
+            Debug.Log("ray");
         }
     }
+
+    //private void FixedUpdate()
+    //{
+    //    Ray raycast = Camera.main.ScreenPointToRay(Input.mousePosition);
+    //    RaycastHit raycastHit;
+
+    //    int Raydis2 = 20;
+
+    //    if(Physics.Raycast(raycast, out raycastHit))
+    //    {
+    //        if(raycastHit.collider.CompareTag("metamorphosis"))
+    //        {
+    //            targetRenderer_Mat = raycastHit.collider.GetComponent<Renderer>().material;
+    //            targetMF = raycastHit.collider.GetComponent<MeshFilter>();
+    //            targetMeshCollider_Mat = raycastHit.collider.GetComponent<MeshCollider>().material;
+    //            targetMesh = targetMF.mesh;
+    //            string name = raycastHit.collider.gameObject.name;
+    //            Debug.Log(name + "を選択に変身可能です"); // コンソールに表示
+    //        }
+    //        Debug.DrawRay(raycast.origin, raycast.direction * Raydis2, Color.green, 5);
+    //    }
+    //}
     public bool metamorphosisflag 
     {
         get

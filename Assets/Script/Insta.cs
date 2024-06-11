@@ -24,7 +24,7 @@ public class Insta : MonoBehaviour
         var current_GP = Gamepad.current;
         var reproduction = current_GP.buttonWest;
         Vector3 posi = transform.position;
-        reproductionObj = rayCastCS.targetObj;
+        //reproductionObj = rayCastCS.targetObj;
         duplicate.text = "ï°êªâÒêî  5 / " + count.ToString();
 
         if (reproductionObj!=null)

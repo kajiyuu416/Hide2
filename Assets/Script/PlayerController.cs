@@ -7,17 +7,18 @@ public class PlayerController : MonoBehaviour
     private CharacterController characterController;
     private float gravity = -9.8f;
     private float JumpPower = 6.0f;
-    float movedirY;
     private bool isfall;
+    private bool lockOnMode;
     private Vector3 playerMove_input;
     private Vector2 leftStickVal;
     private Vector2 rightStickVal;
     Vector3 movedir = Vector3.zero;
+    private float movedirY;
     private Animator animator;
     private PlayerInput playerInput;
-
     private const string gamepad = "Gamepad";
     private const string keyboard_mouse = "Keyboard&Mouse";
+
 
     private void Awake()
     {
@@ -38,6 +39,7 @@ public class PlayerController : MonoBehaviour
             Debug.Log("keyboard&Mouse");
         }
     }
+
     private void PlayerMove()
     {
         playerMove_input.x = leftStickVal.x;
@@ -70,7 +72,12 @@ public class PlayerController : MonoBehaviour
         }
 
         //キャラクターの回転
-        if(moveForward != Vector3.zero)
+        if(cameraForward != Vector3.zero && lockOnMode)
+        {
+            Quaternion QL = Quaternion.LookRotation(cameraForward);
+            transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
+        }
+        else if(moveForward != Vector3.zero&& !lockOnMode)
         {
             Quaternion QL = Quaternion.LookRotation(moveForward);
             transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
@@ -78,6 +85,7 @@ public class PlayerController : MonoBehaviour
         animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
     }
+
 
     private void OnMove(InputValue var)
     {
@@ -93,6 +101,17 @@ public class PlayerController : MonoBehaviour
         get
         {
             return rightStickVal;
+        }
+    }
+    public bool Duplicate_lockOnMode
+    {
+        get
+        {
+            return lockOnMode;
+        }
+        set
+        {
+            lockOnMode = value;
         }
     }
 }

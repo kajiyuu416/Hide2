@@ -7,12 +7,20 @@ using UnityEngine.InputSystem;
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] Transform player;
+    [SerializeField] RayCastCS rayCastcs;
     private PlayerController playerController;
-    private const float distanceToPlayerM = 6.0f;    // カメラとプレイヤーとの距離[m]
-    private const float heightM = 1.3f;            // 注視点の高さ[m]          // 注視点の高さ[m]
-    public float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
-    private float RotationSensitivity = 300.0f;// 感度
+    private float distanceToPlayerM = 6.0f;    // カメラとプレイヤーとの距離[m]
+    private float heightM = 1.3f;            // 注視点の高さ[m]          // 注視点の高さ[m]
+    private float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
+    private float RotationSensitivity = 300.0f;// 初期感度
     Vector3 targetPos;
+
+    private const float min_distanceToPlayerM = 3.0f;
+    private const float max_distanceToPlayerM = 6.0f;
+    private const float max_slidedistanceM = 1.0f;
+    private const float lockOnRotationSensitivity = 150.0f;
+    private const float lockOffRotationSensitivity = 300.0f;
+    private Color objMeshColor;
     private RayCastCS rayCastCS;
     private void Start()
     {
@@ -24,6 +32,30 @@ public class PlayerCamera : MonoBehaviour
         targetPos = player.transform.position;
         rayCastCS = FindObjectOfType<RayCastCS>();
         playerController = FindObjectOfType<PlayerController>();
+    }
+    private void Update()
+    {
+        var current_gamepad = Gamepad.current;
+        var current_keyboard = Keyboard.current;
+        var changelock_GP = current_gamepad.leftShoulder;
+        var changelock_KB = current_keyboard.shiftKey;
+        if(changelock_GP.wasPressedThisFrame|| changelock_KB.wasPressedThisFrame)
+        {
+            StartCoroutine(FadeOut());
+            distanceToPlayerM = min_distanceToPlayerM;
+            SlideDistanceM = max_slidedistanceM;
+            RotationSensitivity = lockOnRotationSensitivity;
+            playerController.Duplicate_lockOnMode = true;
+        }
+        else if(changelock_GP.wasReleasedThisFrame || changelock_KB.wasReleasedThisFrame)
+        {
+            StartCoroutine(FadeIn());
+            playerController.Duplicate_lockOnMode = false;
+            distanceToPlayerM = max_distanceToPlayerM;
+            SlideDistanceM = 0f;
+            RotationSensitivity = lockOffRotationSensitivity;
+        }
+        rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().material.color = objMeshColor;
     }
     // Update is called once per frame
     private void LateUpdate()
@@ -54,6 +86,34 @@ public class PlayerCamera : MonoBehaviour
         {
             rotX = 0;
             rotY = 0;
+        }
+
+    }
+    IEnumerator FadeIn()
+    {
+        objMeshColor = rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().material.color;
+        var color = objMeshColor;
+        yield return new WaitForSeconds(1f);
+
+        while(color.a >= 0)
+        {
+            color.a -= 0.05f;
+            objMeshColor = color;
+            yield return null;
+        }
+        rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().enabled = false;
+    }
+    IEnumerator FadeOut()
+    {
+        objMeshColor = rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().material.color;
+        rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().enabled = true;
+        var color = objMeshColor;
+        yield return new WaitForSeconds(1f);
+        while(color.a <= 1)
+        {
+            color.a += 0.05f;
+            objMeshColor = color;
+            yield return null;
         }
     }
 }
