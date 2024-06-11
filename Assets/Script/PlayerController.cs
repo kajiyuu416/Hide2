@@ -11,6 +11,7 @@ public class PlayerController : MonoBehaviour
     private const int frequency = 1;
     private bool isjump;
     private bool isfall;
+    public bool isground;
     private Vector3 playerMove_input;
     private Vector2 leftStickVal;
     private Vector2 rightStickVal;
@@ -55,6 +56,7 @@ public class PlayerController : MonoBehaviour
         if(collision.gameObject.tag == "ground")
         {
             jump_frequency = frequency;
+            isground = true;
         }
 
     }
@@ -68,7 +70,16 @@ public class PlayerController : MonoBehaviour
                 jump_frequency = frequency;
                 isjump = false;
                 isfall = false;
+                isground = true;
             }
+        }
+    }
+
+    private void OnCollisionExit(Collision collision)
+    {
+        if(collision.gameObject.tag == "ground")
+        {
+            isground = false;
         }
     }
 
@@ -81,14 +92,15 @@ public class PlayerController : MonoBehaviour
         Vector3 moveForward = cameraForward * playerMove_input.z + Camera.main.transform.right * playerMove_input.x;
         var velocity = new Vector3(playerMove_input.x, 0, playerMove_input.z).normalized;
         rigidbody.velocity = moveForward * moveSpeed + new Vector3(0, rigidbody.velocity.y, 0);
-        const int falldis = -2;
+        const int falldis = -5;
 
         if(moveForward != Vector3.zero)
         {
             Quaternion QL = Quaternion.LookRotation(moveForward);
             transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
         }
-        if(rigidbody.velocity.y < falldis)
+
+        if(rigidbody.velocity.y < falldis && !isground)
         {
             isfall = true;
             isjump = false;

@@ -5,20 +5,20 @@ using UnityEngine;
 
 public class stairs : MonoBehaviour
 {
-    private void OnCollisionStay(Collision collision)
+    private void OnTriggerStay(Collider other)
     {
-        if(collision.collider.CompareTag("Player"))
+        if(other.tag == "Player")
         {
-            Rigidbody rigid = collision.gameObject.GetComponent<Rigidbody>();
-            rigid.drag = 10;
+            Rigidbody rigid = other.gameObject.GetComponent<Rigidbody>();
+            rigid.drag = 5;
             Debug.Log("aaa");
         }
     }
-    private void OnCollisionExit(Collision collision)
+    private void OnTriggerExit(Collider other)
     {
-        if(collision.collider.CompareTag("Player"))
+        if(other.tag == "Player")
         {
-            Rigidbody rigid = collision.gameObject.GetComponent<Rigidbody>();
+            Rigidbody rigid = other.gameObject.GetComponent<Rigidbody>();
             rigid.drag = 1;
             Debug.Log("bbb");
         }
