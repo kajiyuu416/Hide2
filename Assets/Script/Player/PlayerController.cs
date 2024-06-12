@@ -19,6 +19,8 @@ public class PlayerController : MonoBehaviour
     private const string gamepad = "Gamepad";
     private const string keyboard_mouse = "Keyboard&Mouse";
 
+    private const float defaultColliderHeight = 1.6f;
+
 
     private void Awake()
     {
@@ -69,6 +71,8 @@ public class PlayerController : MonoBehaviour
         if(movedirY > -5 || movedirY <= -10)
         {
             isfall = true;
+            characterController.height = animator.GetFloat("ColliderHeight");
+            characterController.center = new Vector3(characterController.center.x, animator.GetFloat("ColliderCenter"), characterController.center.z);
         }
 
         //キャラクターの回転
@@ -81,6 +85,12 @@ public class PlayerController : MonoBehaviour
         {
             Quaternion QL = Quaternion.LookRotation(moveForward);
             transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
+        }
+
+        if(!isfall)
+        {
+            characterController.height = defaultColliderHeight;
+            characterController.center = new Vector3(characterController.center.x,0.9f, characterController.center.z);
         }
         animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
