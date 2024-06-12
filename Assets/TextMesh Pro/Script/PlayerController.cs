@@ -32,11 +32,11 @@ public class PlayerController : MonoBehaviour
 
         if(playerInput.currentControlScheme.ToString() == gamepad)
         {
-            Debug.Log("gamepad");
+           
         }
         if(playerInput.currentControlScheme.ToString() == keyboard_mouse)
         {
-            Debug.Log("keyboard&Mouse");
+       
         }
     }
 

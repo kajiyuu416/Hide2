@@ -41,7 +41,6 @@ public class PlayerCamera : MonoBehaviour
         var changelock_KB = current_keyboard.shiftKey;
         if(changelock_GP.wasPressedThisFrame|| changelock_KB.wasPressedThisFrame)
         {
-            StartCoroutine(FadeOut());
             distanceToPlayerM = min_distanceToPlayerM;
             SlideDistanceM = max_slidedistanceM;
             RotationSensitivity = lockOnRotationSensitivity;
@@ -49,13 +48,11 @@ public class PlayerCamera : MonoBehaviour
         }
         else if(changelock_GP.wasReleasedThisFrame || changelock_KB.wasReleasedThisFrame)
         {
-            StartCoroutine(FadeIn());
             playerController.Duplicate_lockOnMode = false;
             distanceToPlayerM = max_distanceToPlayerM;
             SlideDistanceM = 0f;
             RotationSensitivity = lockOffRotationSensitivity;
         }
-        rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().material.color = objMeshColor;
     }
     // Update is called once per frame
     private void LateUpdate()
@@ -82,38 +79,5 @@ public class PlayerCamera : MonoBehaviour
         transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
 
-        if(GameManager.Non_control)
-        {
-            rotX = 0;
-            rotY = 0;
-        }
-
-    }
-    IEnumerator FadeIn()
-    {
-        objMeshColor = rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().material.color;
-        var color = objMeshColor;
-        yield return new WaitForSeconds(1f);
-
-        while(color.a >= 0)
-        {
-            color.a -= 0.05f;
-            objMeshColor = color;
-            yield return null;
-        }
-        rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().enabled = false;
-    }
-    IEnumerator FadeOut()
-    {
-        objMeshColor = rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().material.color;
-        rayCastcs.objctacleRayObject.GetComponent<MeshRenderer>().enabled = true;
-        var color = objMeshColor;
-        yield return new WaitForSeconds(1f);
-        while(color.a <= 1)
-        {
-            color.a += 0.05f;
-            objMeshColor = color;
-            yield return null;
-        }
     }
 }
