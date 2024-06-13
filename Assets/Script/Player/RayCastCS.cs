@@ -7,6 +7,7 @@ public class RayCastCS : MonoBehaviour
     [SerializeField] Camera cam;
     [SerializeField] Image cursor;
     private PlayerController playerController;
+    private GameManager gameManager;
     private SkinnedMeshRenderer target_SkinnedMeshRenderer;
     private Mesh meshColMesh;
     private Rigidbody rigidbody;
@@ -17,12 +18,12 @@ public class RayCastCS : MonoBehaviour
     {
         rigidbody = GetComponent<Rigidbody>();
         playerController = FindObjectOfType<PlayerController>();
+        gameManager = FindObjectOfType<GameManager>();
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
     {
-        var current_GP = Gamepad.current;
-        var change = current_GP.buttonEast;
+        var change = gameManager.Duplicate_gamepad_connection.buttonEast;
         if(playerController.Duplicate_lockOnMode)
         {
             cursor.enabled = true;
@@ -57,6 +58,7 @@ public class RayCastCS : MonoBehaviour
                     rayHitObject = hit.collider.gameObject;
                     GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = target_SkinnedMeshRenderer.sharedMesh;
                     GetComponent<MeshCollider>().sharedMesh = meshColMesh;
+                    playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
                 }
                 Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red);

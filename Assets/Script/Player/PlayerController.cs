@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
@@ -6,20 +7,22 @@ public class PlayerController : MonoBehaviour
     [SerializeField] float moveSpeed;
     private RayCastCS raycastCS;
     private CharacterController characterController;
+    private GameManager gameManager;
+    private int state = (int) player_state.defaultMode;
+    private int oldstate;
     private float gravity = -9.8f;
     private float JumpPower = 6.0f;
+    private float movedirY;
     private const float defaultColliderHeight = 1.6f;
     private const float defaultColliderCenter = 0.9f;
     private bool isfall;
     private bool lockOnMode;
-    private Vector3 playerMove_input;
     private Vector2 leftStickVal;
     private Vector2 rightStickVal;
-    Vector3 movedir = Vector3.zero;
-    private float movedirY;
+    private Vector3 playerMove_input;
+    private Vector3 movedir = Vector3.zero;
     private Animator animator;
     private PlayerInput playerInput;
-    
     public enum player_state
     {
         defaultMode, metamorphosisMode
@@ -31,10 +34,12 @@ public class PlayerController : MonoBehaviour
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
         raycastCS = FindObjectOfType<RayCastCS>();
-
+        gameManager = FindObjectOfType<GameManager>();
+        oldstate = state;
     }
     private void Update()
     {
+        Change_State();
         PlayerMove();
     }
 
@@ -49,10 +54,8 @@ public class PlayerController : MonoBehaviour
         Vector3 globaldir = transform.TransformDirection(movedir);
         characterController.Move(new Vector3(movedir.x, movedirY, movedir.z) * Time.deltaTime);
 
-        var current_gamepad = Gamepad.current;
-        var current_keyboard = Keyboard.current;
-        var Jump_KB = current_keyboard.spaceKey;
-        var Jump_GP = current_gamepad.buttonSouth;
+        var Jump_KB = gameManager.Duplicate_keyboard_connection.spaceKey;
+        var Jump_GP = gameManager.Duplicate_gamepad_connection.buttonSouth;
 
         if(characterController.isGrounded)
         {
@@ -63,7 +66,6 @@ public class PlayerController : MonoBehaviour
                 movedirY = JumpPower;
             }
         }
-
         if(movedirY > -5 || movedirY <= -10)
         {
             isfall = true;
@@ -76,7 +78,6 @@ public class PlayerController : MonoBehaviour
             characterController.height = defaultColliderHeight;
             characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
         }
-
         //キャラクターの回転
         if(cameraForward != Vector3.zero && lockOnMode)
         {
@@ -88,11 +89,30 @@ public class PlayerController : MonoBehaviour
             Quaternion QL = Quaternion.LookRotation(moveForward);
             transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
         }
-
         animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
     }
 
+    private void Change_State()
+    {
+        if(state != oldstate)
+        {
+            oldstate = state;
+            switch(state)
+            {
+                case (int) player_state.defaultMode:
+                    Debug.Log("default");
+                    break;
+
+                case (int) player_state.metamorphosisMode:
+                    Debug.Log("metamor");
+                    break;
+
+                default:
+                    break;
+            }
+        }
+    }
 
     private void OnMove(InputValue var)
     {
@@ -126,6 +146,18 @@ public class PlayerController : MonoBehaviour
         get
         {
             return playerInput;
+        }
+    }
+
+    public int Duplicate_state
+    {
+        get
+        {
+            return state;
+        }
+        set
+        {
+            state = value;
         }
     }
 }
