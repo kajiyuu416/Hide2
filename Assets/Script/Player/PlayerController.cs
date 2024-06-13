@@ -4,9 +4,12 @@ using UnityEngine.SceneManagement;
 public class PlayerController : MonoBehaviour
 {
     [SerializeField] float moveSpeed;
+    private RayCastCS raycastCS;
     private CharacterController characterController;
     private float gravity = -9.8f;
     private float JumpPower = 6.0f;
+    private const float defaultColliderHeight = 1.6f;
+    private const float defaultColliderCenter = 0.9f;
     private bool isfall;
     private bool lockOnMode;
     private Vector3 playerMove_input;
@@ -16,30 +19,23 @@ public class PlayerController : MonoBehaviour
     private float movedirY;
     private Animator animator;
     private PlayerInput playerInput;
-    private const string gamepad = "Gamepad";
-    private const string keyboard_mouse = "Keyboard&Mouse";
-
-    private const float defaultColliderHeight = 1.6f;
-
+    
+    public enum player_state
+    {
+        defaultMode, metamorphosisMode
+    }
 
     private void Awake()
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+        raycastCS = FindObjectOfType<RayCastCS>();
+
     }
     private void Update()
     {
         PlayerMove();
-
-        if(playerInput.currentControlScheme.ToString() == gamepad)
-        {
-           
-        }
-        if(playerInput.currentControlScheme.ToString() == keyboard_mouse)
-        {
-       
-        }
     }
 
     private void PlayerMove()
@@ -75,6 +71,12 @@ public class PlayerController : MonoBehaviour
             characterController.center = new Vector3(characterController.center.x, animator.GetFloat("ColliderCenter"), characterController.center.z);
         }
 
+        if(!isfall && !raycastCS.metamorphosisflag)
+        {
+            characterController.height = defaultColliderHeight;
+            characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
+        }
+
         //キャラクターの回転
         if(cameraForward != Vector3.zero && lockOnMode)
         {
@@ -87,11 +89,6 @@ public class PlayerController : MonoBehaviour
             transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
         }
 
-        if(!isfall)
-        {
-            characterController.height = defaultColliderHeight;
-            characterController.center = new Vector3(characterController.center.x,0.9f, characterController.center.z);
-        }
         animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
     }
@@ -122,6 +119,13 @@ public class PlayerController : MonoBehaviour
         set
         {
             lockOnMode = value;
+        }
+    }
+    public PlayerInput Duplicate_PlayerInput
+    {
+        get
+        {
+            return playerInput;
         }
     }
 }
