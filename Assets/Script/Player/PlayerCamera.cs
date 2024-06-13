@@ -15,7 +15,7 @@ public class PlayerCamera : MonoBehaviour
     private float RotationSensitivity = 300.0f;// ‰ŠúŠ´“x
     Vector3 targetPos;
 
-    private const float min_distanceToPlayerM = 3.0f;
+    private const float min_distanceToPlayerM = 4.0f;
     private const float max_distanceToPlayerM = 6.0f;
     private const float max_slidedistanceM = 1.0f;
     private const float lockOnRotationSensitivity = 150.0f;
@@ -36,17 +36,15 @@ public class PlayerCamera : MonoBehaviour
     private void Update()
     {
         var current_gamepad = Gamepad.current;
-        var current_keyboard = Keyboard.current;
         var changelock_GP = current_gamepad.leftShoulder;
-        var changelock_KB = current_keyboard.shiftKey;
-        if(changelock_GP.wasPressedThisFrame|| changelock_KB.wasPressedThisFrame)
+        if(changelock_GP.wasPressedThisFrame|| Input.GetMouseButton(1))
         {
             distanceToPlayerM = min_distanceToPlayerM;
             SlideDistanceM = max_slidedistanceM;
             RotationSensitivity = lockOnRotationSensitivity;
             playerController.Duplicate_lockOnMode = true;
         }
-        else if(changelock_GP.wasReleasedThisFrame || changelock_KB.wasReleasedThisFrame)
+        else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
         {
             playerController.Duplicate_lockOnMode = false;
             distanceToPlayerM = max_distanceToPlayerM;
@@ -60,22 +58,40 @@ public class PlayerCamera : MonoBehaviour
         var rotX = playerController.Duplicate_rightStickVal.x * Time.deltaTime * RotationSensitivity;
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * RotationSensitivity;
         var lookAt = player.transform.position + Vector3.up * heightM;
-        float upper_limit = 0.2f;
+        float upper_limit = 0.1f;
         float lower_limit = -0.8f;
-        bool metamorphosisflag = rayCastCS.metamorphosisflag;
+        float lockOn_upper_limit = -0.6f;
+        float lockOn_lower_limit = 0.5f;
 
-        transform.RotateAround(lookAt, Vector3.up, rotX);
-
-        if(transform.forward.y > upper_limit && rotY < 0)
+        if(playerController.Duplicate_lockOnMode)
         {
-            rotY = 0;
+            if(transform.forward.y < lockOn_upper_limit && rotY < 0)
+            {
+                rotY = 0;
+            }
+
+            if(transform.forward.y > lockOn_lower_limit && rotY > 0)
+            {
+                rotY = 0;
+            }
+            transform.RotateAround(lookAt, Vector3.up, rotX);
+            transform.RotateAround(lookAt, -transform.right, rotY);
+        }
+        else if(!playerController.Duplicate_lockOnMode)
+        {
+            if(transform.forward.y > upper_limit && rotY < 0)
+            {
+                rotY = 0;
+            }
+
+            if(transform.forward.y < lower_limit && rotY > 0)
+            {
+                rotY = 0;
+            }
+            transform.RotateAround(lookAt, Vector3.up, rotX);
+            transform.RotateAround(lookAt, transform.right, rotY);
         }
 
-        if(transform.forward.y < lower_limit && rotY > 0)
-        {
-            rotY = 0;
-        }
-        transform.RotateAround(lookAt, transform.right, rotY);
         transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
 

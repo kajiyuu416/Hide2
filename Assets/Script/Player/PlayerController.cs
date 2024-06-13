@@ -33,7 +33,7 @@ public class PlayerController : MonoBehaviour
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
-        raycastCS = FindObjectOfType<RayCastCS>();
+        raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
         oldstate = state;
     }
@@ -66,17 +66,20 @@ public class PlayerController : MonoBehaviour
                 movedirY = JumpPower;
             }
         }
-        if(movedirY > -5 || movedirY <= -10)
+        if(!raycastCS.metamorphosisflag)
         {
-            isfall = true;
-            characterController.height = animator.GetFloat("ColliderHeight");
-            characterController.center = new Vector3(characterController.center.x, animator.GetFloat("ColliderCenter"), characterController.center.z);
-        }
+            if(movedirY > -5 || movedirY <= -10)
+            {
+                isfall = true;
+                characterController.height = animator.GetFloat("ColliderHeight");
+                characterController.center = new Vector3(characterController.center.x, animator.GetFloat("ColliderCenter"), characterController.center.z);
+            }
 
-        if(!isfall && !raycastCS.metamorphosisflag)
-        {
-            characterController.height = defaultColliderHeight;
-            characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
+            if(!isfall)
+            {
+                characterController.height = defaultColliderHeight;
+                characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
+            }
         }
         //キャラクターの回転
         if(cameraForward != Vector3.zero && lockOnMode)
@@ -95,16 +98,25 @@ public class PlayerController : MonoBehaviour
 
     private void Change_State()
     {
+
+        var metamorphosis_height = 1.1f;
+        var metamorphosis_center = 0.7f;
+        var litleJump = 4;
         if(state != oldstate)
         {
             oldstate = state;
             switch(state)
             {
                 case (int) player_state.defaultMode:
+                    characterController.height = defaultColliderHeight;
+                    characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
+                    movedirY = litleJump;
                     Debug.Log("default");
                     break;
 
                 case (int) player_state.metamorphosisMode:
+                    characterController.height = metamorphosis_height;
+                    characterController.center = new Vector3(characterController.center.x, metamorphosis_center, characterController.center.z);
                     Debug.Log("metamor");
                     break;
 

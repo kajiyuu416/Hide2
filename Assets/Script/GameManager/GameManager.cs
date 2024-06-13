@@ -1,11 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 public class GameManager : MonoBehaviour
 {
+    public Image cursor;
     private const string gamepad = "Gamepad";
     private const string keyboard_mouse = "Keyboard&Mouse";
     private PlayerController playerController;
@@ -15,6 +17,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
     }
     private void Update()
     {
@@ -34,6 +38,11 @@ public class GameManager : MonoBehaviour
         if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == keyboard_mouse)
         {
 
+        }
+        if(Input.GetKeyDown(KeyCode.Escape))
+        {
+            Cursor.visible = true;
+            Cursor.lockState = CursorLockMode.None;
         }
     }
     public Gamepad Duplicate_gamepad_connection
