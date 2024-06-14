@@ -4,10 +4,10 @@ using UnityEngine.UI;
 public class RayCastCS : MonoBehaviour
 {
     [SerializeField] GameObject rayHitObject;
-    [SerializeField] Camera cam;
     [SerializeField] Mesh defaultMesh;
     [SerializeField] GameObject metamorphosisEffect;
     [SerializeField] GameObject metamorphosis_unravelEffect;
+    public Camera cam;
     private PlayerController playerController;
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;

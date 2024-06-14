@@ -3,12 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.TextCore.Text;
 
 public class PlayerCamera : MonoBehaviour
 {
-    [SerializeField] Transform player;
-    [SerializeField] RayCastCS rayCastcs;
-    private PlayerController playerController;
+    public Transform player;
+    public PlayerController playerController;
     private float distanceToPlayerM = 6.0f;    // カメラとプレイヤーとの距離[m]
     private float heightM = 1.3f;            // 注視点の高さ[m]          // 注視点の高さ[m]
     private float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
@@ -20,8 +20,6 @@ public class PlayerCamera : MonoBehaviour
     private const float max_slidedistanceM = 1.0f;
     private const float lockOnRotationSensitivity = 150.0f;
     private const float lockOffRotationSensitivity = 300.0f;
-    private Color objMeshColor;
-    private RayCastCS rayCastCS;
     private void Start()
     {
         if (player == null)
@@ -30,7 +28,6 @@ public class PlayerCamera : MonoBehaviour
             Application.Quit();
         }
         targetPos = player.transform.position;
-        rayCastCS = FindObjectOfType<RayCastCS>();
         playerController = FindObjectOfType<PlayerController>();
     }
     private void Update()

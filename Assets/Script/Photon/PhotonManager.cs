@@ -114,9 +114,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         CloseUI();
         roomPanel.SetActive(true);
         RoomName.text = PhotonNetwork.CurrentRoom.Name;
-
         GetAllPlayer();
-
         CheckRoomHost();
     }
 
@@ -213,7 +211,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void GetAllPlayer()
     {
         initializePlayerList();
-
         PlayerDisplay();
     }
 
@@ -232,7 +229,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         foreach (var players in PhotonNetwork.PlayerList)
         {
-
             playerTextGeneration(players);
         }
     }
@@ -315,5 +311,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void PlayeGame()
     {
         PhotonNetwork.LoadLevel(PlayScene);
+        Debug.Log("start");
     }
 }
