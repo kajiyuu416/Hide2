@@ -70,7 +70,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     {
         PhotonNetwork.JoinLobby();
         loadingText.text = "ルームへ参加中...";
-
         //ホストと同じシーンを読み込み
         PhotonNetwork.AutomaticallySyncScene = true;
     }
@@ -98,7 +97,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         if(!string.IsNullOrEmpty(enterRoomName.text))
         {
             RoomOptions options = new RoomOptions();
-            options.MaxPlayers = 4;
+            options.MaxPlayers = 2;
             PhotonNetwork.CreateRoom(enterRoomName.text, options);
             CloseUI();
             Debug.Log(enterRoomName.text + "");
@@ -310,6 +309,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     //ゲーム開始時呼ばれる関数
     public void PlayeGame()
     {
+        PhotonNetwork.IsMessageQueueRunning = false;
         PhotonNetwork.LoadLevel(PlayScene);
         Debug.Log("start");
     }

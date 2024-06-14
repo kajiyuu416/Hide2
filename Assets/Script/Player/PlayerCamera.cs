@@ -5,16 +5,14 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.TextCore.Text;
 
-public class PlayerCamera : MonoBehaviour
+public class PlayerCamera : Photon.Pun.MonoBehaviourPun
 {
-    public Transform player;
+    public Transform target;
     public PlayerController playerController;
     private float distanceToPlayerM = 6.0f;    // カメラとプレイヤーとの距離[m]
     private float heightM = 1.3f;            // 注視点の高さ[m]          // 注視点の高さ[m]
     private float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
     private float RotationSensitivity = 300.0f;// 初期感度
-    Vector3 targetPos;
-
     private const float min_distanceToPlayerM = 4.0f;
     private const float max_distanceToPlayerM = 6.0f;
     private const float max_slidedistanceM = 1.0f;
@@ -22,39 +20,22 @@ public class PlayerCamera : MonoBehaviour
     private const float lockOffRotationSensitivity = 300.0f;
     private void Start()
     {
-        if (player == null)
+        if (target == null)
         {
             Debug.LogError("ターゲットが設定されていない");
             Application.Quit();
-        }
-        targetPos = player.transform.position;
-        playerController = FindObjectOfType<PlayerController>();
-    }
-    private void Update()
-    {
-        var current_gamepad = Gamepad.current;
-        var changelock_GP = current_gamepad.leftShoulder;
-        if(changelock_GP.wasPressedThisFrame|| Input.GetMouseButton(1))
-        {
-            distanceToPlayerM = min_distanceToPlayerM;
-            SlideDistanceM = max_slidedistanceM;
-            RotationSensitivity = lockOnRotationSensitivity;
-            playerController.Duplicate_lockOnMode = true;
-        }
-        else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
-        {
-            playerController.Duplicate_lockOnMode = false;
-            distanceToPlayerM = max_distanceToPlayerM;
-            SlideDistanceM = 0f;
-            RotationSensitivity = lockOffRotationSensitivity;
         }
     }
     // Update is called once per frame
     private void LateUpdate()
     {
+        if(!photonView.IsMine)
+        {
+            return;
+        }
         var rotX = playerController.Duplicate_rightStickVal.x * Time.deltaTime * RotationSensitivity;
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * RotationSensitivity;
-        var lookAt = player.transform.position + Vector3.up * heightM;
+        var lookAt = target.transform.position + Vector3.up * heightM;
         float upper_limit = 0.1f;
         float lower_limit = -0.8f;
         float lockOn_upper_limit = -0.6f;
@@ -92,5 +73,21 @@ public class PlayerCamera : MonoBehaviour
         transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
 
+        var current_gamepad = Gamepad.current;
+        var changelock_GP = current_gamepad.leftShoulder;
+        if(changelock_GP.wasPressedThisFrame || Input.GetMouseButton(1))
+        {
+            distanceToPlayerM = min_distanceToPlayerM;
+            SlideDistanceM = max_slidedistanceM;
+            RotationSensitivity = lockOnRotationSensitivity;
+            playerController.Duplicate_lockOnMode = true;
+        }
+        else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
+        {
+            playerController.Duplicate_lockOnMode = false;
+            distanceToPlayerM = max_distanceToPlayerM;
+            SlideDistanceM = 0f;
+            RotationSensitivity = lockOffRotationSensitivity;
+        }
     }
 }

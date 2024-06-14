@@ -2,7 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.SceneManagement;
-public class PlayerController : MonoBehaviour
+using Photon.Pun;
+public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
     [SerializeField] float moveSpeed;
     private RayCastCS raycastCS;
@@ -39,6 +40,10 @@ public class PlayerController : MonoBehaviour
     }
     private void Update()
     {
+        if(!photonView.IsMine)
+        {
+            return;
+        }
         Change_State();
         PlayerMove();
     }
@@ -98,7 +103,6 @@ public class PlayerController : MonoBehaviour
 
     private void Change_State()
     {
-
         var metamorphosis_height = 1.1f;
         var metamorphosis_center = 0.7f;
         var litleJump = 4;

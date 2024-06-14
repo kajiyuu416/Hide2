@@ -8,16 +8,14 @@ public class RayCastCS : MonoBehaviour
     [SerializeField] GameObject metamorphosisEffect;
     [SerializeField] GameObject metamorphosis_unravelEffect;
     public Camera cam;
-    private PlayerController playerController;
+    public PlayerController playerController;
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
     private Mesh meshColMesh;
     private bool metamorphosisFlag = false;
     Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
-
     private void Start()
     {
-        playerController = GetComponent<PlayerController>();
         gameManager = FindObjectOfType<GameManager>();
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら

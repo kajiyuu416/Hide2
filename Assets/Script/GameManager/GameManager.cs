@@ -31,14 +31,14 @@ public class GameManager : MonoBehaviour
         gamepad_connection = Gamepad.current;
         keyboard_connection = Keyboard.current;
 
-        if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == gamepad)
-        {
+        //if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == gamepad)
+        //{
 
-        }
-        if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == keyboard_mouse)
-        {
+        //}
+        //if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == keyboard_mouse)
+        //{
 
-        }
+        //}
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.visible = true;
