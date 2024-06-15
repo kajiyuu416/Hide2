@@ -88,9 +88,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         CloseUI();
         createRoomPalel.SetActive(true);
     }
-    //todo::ルーム名が空の状態でも、ルームが作成できてしまう為、空の状態では作成できないようにする
-    //textの状態ではからの状態で作成できてしまうため、TmpInputFieldへ変更することで
-
     public void CreateloomButton()
     {
         //  ルーム製作   
@@ -309,8 +306,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     //ゲーム開始時呼ばれる関数
     public void PlayeGame()
     {
+        //ホストと同じシーンを読み込み
         PhotonNetwork.IsMessageQueueRunning = false;
         PhotonNetwork.LoadLevel(PlayScene);
-        Debug.Log("start");
     }
 }

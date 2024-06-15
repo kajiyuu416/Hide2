@@ -1,9 +1,8 @@
-using Photon.Pun.Demo.PunBasics;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.TextCore.Text;
+using Photon.Pun;
 
 public class PlayerCamera : Photon.Pun.MonoBehaviourPun
 {
@@ -20,19 +19,23 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private const float lockOffRotationSensitivity = 300.0f;
     private void Start()
     {
-        if (target == null)
+        if(target == null)
         {
             Debug.LogError("ターゲットが設定されていない");
-            Application.Quit();
         }
+    }
+    private void Update()
+    {
+        Debug.Log(target);
+
+        if(!photonView.IsMine)
+            return;
     }
     // Update is called once per frame
     private void LateUpdate()
     {
         if(!photonView.IsMine)
-        {
             return;
-        }
         var rotX = playerController.Duplicate_rightStickVal.x * Time.deltaTime * RotationSensitivity;
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * RotationSensitivity;
         var lookAt = target.transform.position + Vector3.up * heightM;

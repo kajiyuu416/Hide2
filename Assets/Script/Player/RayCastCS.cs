@@ -1,7 +1,8 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
-public class RayCastCS : MonoBehaviour
+using Photon.Pun;
+public class RayCastCS : Photon.Pun.MonoBehaviourPun
 {
     [SerializeField] GameObject rayHitObject;
     [SerializeField] Mesh defaultMesh;
@@ -12,6 +13,7 @@ public class RayCastCS : MonoBehaviour
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
     private Mesh meshColMesh;
+    private MeshRenderer meshren;
     private bool metamorphosisFlag = false;
     Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
     private void Start()
@@ -21,8 +23,10 @@ public class RayCastCS : MonoBehaviour
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
     {
-        var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
+        if(!photonView.IsMine)
+            return;
 
+        var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
         if(playerController.Duplicate_lockOnMode)
         {
             gameManager.cursor.enabled = true;
@@ -62,8 +66,9 @@ public class RayCastCS : MonoBehaviour
                 {
                     rayHitObject = hit.collider.gameObject;
                     GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = null;
-                    GetComponentInChildren<MeshFilter>().sharedMesh = target_MeshFilter.sharedMesh;
+                    GetComponent<MeshFilter>().sharedMesh = target_MeshFilter.sharedMesh;
                     GetComponent<MeshCollider>().sharedMesh = meshColMesh;
+                    
                     GameObject metamorphosis = Instantiate(metamorphosisEffect, transform.position, Quaternion.Euler(0f, -90f, 0f));
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
@@ -79,7 +84,7 @@ public class RayCastCS : MonoBehaviour
             if(return_Default_KB.wasPressedThisFrame ||return_Default_GP.wasPressedThisFrame)
             {
                 GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = defaultMesh;
-                GetComponentInChildren<MeshFilter>().sharedMesh = null;
+                GetComponent<MeshFilter>().sharedMesh = null;
                 GetComponent<MeshCollider>().sharedMesh = null;
                 rayHitObject = null;
                 GameObject metamorphosis_unravel = Instantiate(metamorphosis_unravelEffect, transform.position, Quaternion.Euler(0f, -90f, 0f));

@@ -5,7 +5,7 @@ using UnityEngine.SceneManagement;
 using Photon.Pun;
 public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
-    [SerializeField] float moveSpeed;
+    private float moveSpeed = 8.0f;
     private RayCastCS raycastCS;
     private CharacterController characterController;
     private GameManager gameManager;
@@ -46,6 +46,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         }
         Change_State();
         PlayerMove();
+
     }
 
     private void PlayerMove()
@@ -130,6 +131,15 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         }
     }
 
+    private void OnControllerColliderHit(ControllerColliderHit hit)
+    {
+        // 特定のオブジェクトにぶつかった場合の処理
+        if(hit.gameObject.CompareTag("ReSet"))
+        {
+            transform.position = Vector3.zero;
+        }
+    }
+
     private void OnMove(InputValue var)
     {
         leftStickVal = var.Get<Vector2>();
@@ -176,4 +186,5 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
             state = value;
         }
     }
+    
 }
