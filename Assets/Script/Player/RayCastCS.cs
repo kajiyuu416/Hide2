@@ -23,7 +23,7 @@ public class RayCastCS : Photon.Pun.MonoBehaviourPun
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
     {
-        if(!photonView.IsMine)
+        if(!photonView.IsMine || playerController == null)
             return;
 
         var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;

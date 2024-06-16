@@ -23,6 +23,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private Vector3 playerMove_input;
     private Vector3 movedir = Vector3.zero;
     private Animator animator;
+    public Camera cloneCamera;
     private PlayerInput playerInput;
     public enum player_state
     {
@@ -40,21 +41,20 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     }
     private void Update()
     {
-        if(!photonView.IsMine)
+        if(!photonView.IsMine||cloneCamera == null)
         {
             return;
         }
         Change_State();
         PlayerMove();
-
     }
 
     private void PlayerMove()
     {
         playerMove_input.x = leftStickVal.x;
         playerMove_input.z = leftStickVal.y;
-        Vector3 cameraForward = Vector3.Scale(Camera.main.transform.forward, new Vector3(1, 0, 1)).normalized;
-        Vector3 moveForward = cameraForward * playerMove_input.z + Camera.main.transform.right * playerMove_input.x;
+        Vector3 cameraForward = Vector3.Scale(cloneCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
+        Vector3 moveForward = cameraForward * playerMove_input.z + cloneCamera.transform.right * playerMove_input.x;
         movedir = moveForward * moveSpeed;
         movedirY += Physics.gravity.y * Time.deltaTime;
         Vector3 globaldir = transform.TransformDirection(movedir);

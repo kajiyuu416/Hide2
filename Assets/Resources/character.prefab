@@ -2414,7 +2414,7 @@ MonoBehaviour:
   prefixField: -1
   Synchronization: 3
   OwnershipTransfer: 0
-  observableSearch: 2
+  observableSearch: 0
   ObservedComponents:
   - {fileID: 7159274872922663997}
   - {fileID: 3893840019815791621}

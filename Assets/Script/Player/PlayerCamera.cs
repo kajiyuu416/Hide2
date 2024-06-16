@@ -21,20 +21,13 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     {
         if(target == null)
         {
-            Debug.LogError("ターゲットが設定されていない");
+            Debug.Log("ターゲットが設定されていない");
         }
-    }
-    private void Update()
-    {
-        Debug.Log(target);
-
-        if(!photonView.IsMine)
-            return;
     }
     // Update is called once per frame
     private void LateUpdate()
     {
-        if(!photonView.IsMine)
+        if(!photonView.IsMine || playerController == null || target == null)
             return;
         var rotX = playerController.Duplicate_rightStickVal.x * Time.deltaTime * RotationSensitivity;
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * RotationSensitivity;
