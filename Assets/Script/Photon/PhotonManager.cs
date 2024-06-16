@@ -253,7 +253,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             else
             {
                 PhotonNetwork.NickName = PlayerPrefs.GetString("playerName");
-                Debug.Log("–¼‘O‚Í‚·‚Å‚ÉŒˆ‚Ü‚Á‚Ä‚¢‚Ü‚·B");
             }
         }
     }

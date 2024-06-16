@@ -17,8 +17,8 @@ public class GameManager : MonoBehaviour
     private void Start()
     {
         playerController = FindObjectOfType<PlayerController>();
-        Cursor.visible = false;
-        Cursor.lockState = CursorLockMode.Locked;
+        //Cursor.visible = false;
+        //Cursor.lockState = CursorLockMode.Locked;
     }
     private void Update()
     {

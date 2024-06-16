@@ -17,11 +17,22 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private const float max_slidedistanceM = 1.0f;
     private const float lockOnRotationSensitivity = 150.0f;
     private const float lockOffRotationSensitivity = 300.0f;
+    private Camera camera;
     private void Start()
     {
         if(target == null)
         {
             Debug.Log("ターゲットが設定されていない");
+        }
+        camera = GetComponent<Camera>();
+
+        if(camera.GetComponent<PhotonView>().IsMine)
+        {
+            camera.targetDisplay = 0;
+        }
+        else
+        {
+            camera.targetDisplay = 1;
         }
     }
     // Update is called once per frame
