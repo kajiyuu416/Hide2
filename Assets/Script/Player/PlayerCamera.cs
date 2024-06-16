@@ -20,12 +20,7 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private Camera camera;
     private void Start()
     {
-        if(target == null)
-        {
-            Debug.Log("ターゲットが設定されていない");
-        }
         camera = GetComponent<Camera>();
-
         if(camera.GetComponent<PhotonView>().IsMine)
         {
             camera.targetDisplay = 0;

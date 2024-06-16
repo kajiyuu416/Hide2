@@ -2,7 +2,7 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Photon.Pun;
-public class RayCastCS : Photon.Pun.MonoBehaviourPun
+public class RayCastCS : MonoBehaviourPun, IPunObservable
 {
     [SerializeField] GameObject rayHitObject;
     [SerializeField] Mesh defaultMesh;
@@ -13,12 +13,23 @@ public class RayCastCS : Photon.Pun.MonoBehaviourPun
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
     private Mesh meshColMesh;
-    private MeshRenderer meshren;
+    private MeshRenderer meshRenderer;
+    private MeshCollider meshCollider;
+    private MeshFilter meshFilter;
     private bool metamorphosisFlag = false;
     Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
+        meshRenderer = GetComponent<MeshRenderer>();
+        meshCollider = GetComponent<MeshCollider>();
+        meshFilter = GetComponent<MeshFilter>();
+        if(photonView.IsMine)
+        {
+            meshRenderer.enabled = true;
+            meshCollider.sharedMesh = meshCollider.sharedMesh;
+            meshFilter.mesh = meshFilter.mesh;
+        }
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
@@ -92,8 +103,29 @@ public class RayCastCS : Photon.Pun.MonoBehaviourPun
                 metamorphosisFlag = false;
             }
         }
-
+        meshRenderer.enabled = meshRenderer.enabled;
+        meshCollider.sharedMesh = meshCollider.sharedMesh;
+        meshFilter.mesh = meshFilter.mesh;
     }
+    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+    {
+        Debug.Log("情報の更新");
+        if(stream.IsWriting)
+        {
+            // 自分のオブジェクトであれば、メッシュレンダラーの状態を送信する
+            stream.SendNext(meshRenderer.enabled);
+            stream.SendNext(meshCollider.sharedMesh);
+            stream.SendNext(meshFilter.mesh);
+        }
+        else
+        {
+            // 他のプレイヤーのオブジェクトであれば、受信した状態を反映する
+            meshRenderer.enabled = (bool) stream.ReceiveNext();
+            meshCollider.sharedMesh = (Mesh) stream.ReceiveNext();
+            meshFilter.mesh = (Mesh) stream.ReceiveNext();
+        }
+    }
+
     public bool metamorphosisflag 
     {
         get

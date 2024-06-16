@@ -48,7 +48,6 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         Change_State();
         PlayerMove();
     }
-
     private void PlayerMove()
     {
         playerMove_input.x = leftStickVal.x;

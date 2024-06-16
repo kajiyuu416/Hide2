@@ -2146,8 +2146,8 @@ GameObject:
   - component: {fileID: 4314590520160310181}
   - component: {fileID: 3667107825666169307}
   - component: {fileID: 1841160676645695657}
-  - component: {fileID: 7854468942416415198}
   - component: {fileID: 7854468942416415186}
+  - component: {fileID: 7854468942416415198}
   - component: {fileID: 5693806081168853464}
   - component: {fileID: 5693806081168853461}
   - component: {fileID: 5693806081168853463}
@@ -2206,7 +2206,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7371122997515637605}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -2249,6 +2249,20 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7371122997515637605}
   m_Mesh: {fileID: 0}
+--- !u!64 &7854468942416415186
+MeshCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371122997515637605}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 4
+  m_Convex: 0
+  m_CookingOptions: 30
+  m_Mesh: {fileID: 0}
 --- !u!143 &7854468942416415198
 CharacterController:
   m_ObjectHideFlags: 0
@@ -2267,20 +2281,6 @@ CharacterController:
   m_SkinWidth: 0.08
   m_MinMoveDistance: 0.001
   m_Center: {x: 0, y: 0.9, z: 0}
---- !u!64 &7854468942416415186
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7371122997515637605}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 4
-  m_Convex: 0
-  m_CookingOptions: 30
-  m_Mesh: {fileID: 0}
 --- !u!114 &5693806081168853464
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2379,6 +2379,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2c9fddfcff45f324dbcedee6a8397017, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cloneCamera: {fileID: 0}
 --- !u!114 &5693806081168853463
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2435,7 +2436,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_SynchronizePosition: 1
   m_SynchronizeRotation: 1
-  m_SynchronizeScale: 0
+  m_SynchronizeScale: 1
   m_UseLocal: 1
 --- !u!114 &3893840019815791621
 MonoBehaviour:
