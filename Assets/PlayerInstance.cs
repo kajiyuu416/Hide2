@@ -1,6 +1,8 @@
 using Photon.Pun;
 using UnityEngine;
 using System.Collections;
+using UnityEngine.InputSystem;
+using System.Collections.Generic;
 
 public class PlayerInstance : Photon.Pun.MonoBehaviourPun
 {
@@ -22,9 +24,10 @@ public class PlayerInstance : Photon.Pun.MonoBehaviourPun
             cobj.SetActive(true);
         }
     }
+
     IEnumerator WaitForInitialization(GameObject pobj, GameObject cobj)
     {
-        yield return new WaitForSeconds(0.5f); // 適切な遅延時間を設定する                                             
+        yield return new WaitForSeconds(0.5f); // 適切な遅延時間を設定する                                           
         PlayerController playercon = pobj.GetComponent<PlayerController>();
         RayCastCS raycs = pobj.GetComponent<RayCastCS>();
         Transform playertrans = pobj.GetComponent<Transform>();

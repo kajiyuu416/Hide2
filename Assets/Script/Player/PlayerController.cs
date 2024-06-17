@@ -20,7 +20,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private bool lockOnMode;
     private Vector2 leftStickVal;
     private Vector2 rightStickVal;
-    private Vector3 playerMove_input;
+    public Vector3 playerMove_input;
     private Vector3 movedir = Vector3.zero;
     private Animator animator;
     public Camera cloneCamera;
@@ -34,10 +34,15 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        playerInput = GetComponent<PlayerInput>();
+        playerInput = FindObjectOfType<PlayerInput>();
         raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
         oldstate = state;
+
+        if(!photonView.IsMine)
+        {
+            Destroy(playerInput);
+        }
     }
     private void Update()
     {
@@ -50,6 +55,10 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     }
     private void PlayerMove()
     {
+        if(!photonView.IsMine || cloneCamera == null)
+        {
+            return;
+        }
         playerMove_input.x = leftStickVal.x;
         playerMove_input.z = leftStickVal.y;
         Vector3 cameraForward = Vector3.Scale(cloneCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
