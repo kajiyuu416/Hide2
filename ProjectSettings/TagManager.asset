@@ -9,6 +9,7 @@ TagManager:
   - ground
   - Bullet
   - ReSet
+  - cube
   layers:
   - Default
   - TransparentFX

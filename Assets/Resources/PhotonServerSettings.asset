@@ -41,6 +41,7 @@ MonoBehaviour:
   - RespawnSpaceship
   - SyncPlayerInput
   - Hide
+  - RPC_SetColor
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

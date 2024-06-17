@@ -34,8 +34,8 @@ public class RayCastCS : MonoBehaviourPun, IPunObservable
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
     {
-        if(!photonView.IsMine || playerController == null)
-            return;
+        //if(!photonView.IsMine || playerController == null)
+        //    return;
 
         var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
         if(playerController.Duplicate_lockOnMode)
@@ -84,9 +84,14 @@ public class RayCastCS : MonoBehaviourPun, IPunObservable
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
                 }
+                if(hit.collider.CompareTag("cube"))
+                {
+                    hit.collider.gameObject.GetComponent<cube>().ChangeColor(Color.blue);
+                }
                 Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red);
             }
         }
+
         //変身解除
         if(metamorphosisFlag)
         {
