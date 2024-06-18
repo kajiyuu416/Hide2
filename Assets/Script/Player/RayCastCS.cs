@@ -2,7 +2,10 @@ using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.UI;
 using Photon.Pun;
-public class RayCastCS : MonoBehaviourPun, IPunObservable
+using System.Collections.Generic;
+using System;
+using System.IO;
+public class RayCastCS : MonoBehaviourPun
 {
     [SerializeField] GameObject rayHitObject;
     [SerializeField] Mesh defaultMesh;
@@ -13,29 +16,22 @@ public class RayCastCS : MonoBehaviourPun, IPunObservable
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
     private Mesh meshColMesh;
-    private MeshRenderer meshRenderer;
-    private MeshCollider meshCollider;
-    private MeshFilter meshFilter;
     private bool metamorphosisFlag = false;
     Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
+    private MeshFilter meshFilter;
+    private MeshRenderer meshRenderer;
+
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
-        meshRenderer = GetComponent<MeshRenderer>();
-        meshCollider = GetComponent<MeshCollider>();
         meshFilter = GetComponent<MeshFilter>();
-        if(photonView.IsMine)
-        {
-            meshRenderer.enabled = true;
-            meshCollider.sharedMesh = meshCollider.sharedMesh;
-            meshFilter.mesh = meshFilter.mesh;
-        }
+        meshRenderer = GetComponent<MeshRenderer>();
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
     {
-        //if(!photonView.IsMine || playerController == null)
-        //    return;
+        if(!photonView.IsMine || playerController == null)
+            return;
 
         var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
         if(playerController.Duplicate_lockOnMode)
@@ -77,16 +73,17 @@ public class RayCastCS : MonoBehaviourPun, IPunObservable
                 {
                     rayHitObject = hit.collider.gameObject;
                     GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = null;
-                    GetComponent<MeshFilter>().sharedMesh = target_MeshFilter.sharedMesh;
+                    //GetComponent<MeshFilter>().sharedMesh = target_MeshFilter.sharedMesh;
                     GetComponent<MeshCollider>().sharedMesh = meshColMesh;
-                    
-                    GameObject metamorphosis = Instantiate(metamorphosisEffect, transform.position, Quaternion.Euler(0f, -90f, 0f));
+                    GameObject metamorphosis = PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
+                    ChangeMesh();
+
                 }
                 if(hit.collider.CompareTag("cube"))
                 {
-                    hit.collider.gameObject.GetComponent<cube>().ChangeColor(Color.blue);
+                    hit.collider.gameObject.GetComponent<cube>().ChangeColor(Color.black);
                 }
                 Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red);
             }
@@ -97,39 +94,141 @@ public class RayCastCS : MonoBehaviourPun, IPunObservable
         {
             var return_Default_KB = gameManager.Duplicate_keyboard_connection.ctrlKey;
             var return_Default_GP = gameManager.Duplicate_gamepad_connection.buttonNorth;
+
             if(return_Default_KB.wasPressedThisFrame ||return_Default_GP.wasPressedThisFrame)
             {
                 GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = defaultMesh;
                 GetComponent<MeshFilter>().sharedMesh = null;
                 GetComponent<MeshCollider>().sharedMesh = null;
                 rayHitObject = null;
-                GameObject metamorphosis_unravel = Instantiate(metamorphosis_unravelEffect, transform.position, Quaternion.Euler(0f, -90f, 0f));
+                GameObject metamorphosis_unravel = PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
                 playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
                 metamorphosisFlag = false;
             }
         }
-        meshRenderer.enabled = meshRenderer.enabled;
-        meshCollider.sharedMesh = meshCollider.sharedMesh;
-        meshFilter.mesh = meshFilter.mesh;
     }
-    public void OnPhotonSerializeView(PhotonStream stream, PhotonMessageInfo info)
+
+    // メッシュを変更する処理
+    public void ChangeMesh()
     {
-        Debug.Log("情報の更新");
-        if(stream.IsWriting)
-        {
-            // 自分のオブジェクトであれば、メッシュレンダラーの状態を送信する
-            stream.SendNext(meshRenderer.enabled);
-            stream.SendNext(meshCollider.sharedMesh);
-            stream.SendNext(meshFilter.mesh);
-        }
-        else
-        {
-            // 他のプレイヤーのオブジェクトであれば、受信した状態を反映する
-            meshRenderer.enabled = (bool) stream.ReceiveNext();
-            meshCollider.sharedMesh = (Mesh) stream.ReceiveNext();
-            meshFilter.mesh = (Mesh) stream.ReceiveNext();
-        }
+        Mesh mesh = target_MeshFilter.sharedMesh;
+        Vector3[] vertices = mesh.vertices;
+        int[] triangles = mesh.triangles;
+        Vector2[] uv = mesh.uv;
+
+        // メッシュの情報を送信可能な形式に変換する
+        byte[] serializedMeshData = SerializeMeshData(vertices, triangles, uv);
+
+        // RPCで他のクライアントに送信する
+
+        photonView.RPC("ChangePlayerMesh", RpcTarget.All, serializedMeshData);
     }
+
+    // メッシュデータを受信して再構築するメソッド
+    [PunRPC]
+    void ChangePlayerMesh(byte[] serializedMeshData)
+    {
+        // 受信したデータをデシリアライズしてメッシュを再構築する
+        Mesh receivedMesh = DeserializeMeshData(serializedMeshData);
+
+        // 受信したメッシュを反映する処理を記述する（例えば、自身のMeshFilterに設定するなど）
+        meshFilter.sharedMesh = receivedMesh;
+    }
+
+    // メッシュデータをシリアライズするメソッド
+    private byte[] SerializeMeshData(Vector3[] vertices, int[] triangles, Vector2[] uv)
+    {
+        // 実際のデータをバイト配列に変換するロジックを実装する
+        // ここでは単純化しているため、空の実装を示します
+        // 頂点データをバイト配列にシリアライズする
+        List<byte> byteStream = new List<byte>();
+
+        // 頂点数を先頭に書き込む（整数として）
+        byteStream.AddRange(BitConverter.GetBytes(vertices.Length));
+
+        // 頂点座標を順番にバイト配列に追加する
+        foreach(Vector3 vertex in vertices)
+        {
+            byteStream.AddRange(BitConverter.GetBytes(vertex.x));
+            byteStream.AddRange(BitConverter.GetBytes(vertex.y));
+            byteStream.AddRange(BitConverter.GetBytes(vertex.z));
+        }
+
+        // 三角形インデックスの数を次に書き込む（整数として）
+        byteStream.AddRange(BitConverter.GetBytes(triangles.Length));
+
+        // 三角形インデックスを順番にバイト配列に追加する
+        foreach(int triangleIndex in triangles)
+        {
+            byteStream.AddRange(BitConverter.GetBytes(triangleIndex));
+        }
+
+        // UV座標の数を次に書き込む（整数として）
+        byteStream.AddRange(BitConverter.GetBytes(uv.Length));
+
+        // UV座標を順番にバイト配列に追加する
+        foreach(Vector2 uvCoord in uv)
+        {
+            byteStream.AddRange(BitConverter.GetBytes(uvCoord.x));
+            byteStream.AddRange(BitConverter.GetBytes(uvCoord.y));
+        }
+
+        return byteStream.ToArray();
+
+    }
+
+    // メッシュデータをデシリアライズしてMeshオブジェクトを再構築するメソッド
+    private Mesh DeserializeMeshData(byte[] serializedMeshData)
+    {
+        // 実際のデシリアライズのロジックを実装する
+        // ここでは単純化しているため、空の実装を示します
+        Mesh mesh = new Mesh();
+
+        using(MemoryStream stream = new MemoryStream(serializedMeshData))
+        {
+            using(BinaryReader reader = new BinaryReader(stream))
+            {
+                // 頂点データの復元
+                int vertexCount = reader.ReadInt32();
+                Vector3[] vertices = new Vector3[vertexCount];
+                for(int i = 0; i < vertexCount; i++)
+                {
+                    float x = reader.ReadSingle();
+                    float y = reader.ReadSingle();
+                    float z = reader.ReadSingle();
+                    vertices[i] = new Vector3(x, y, z);
+                }
+
+                // 三角形インデックスの復元
+                int triangleCount = reader.ReadInt32();
+                int[] triangles = new int[triangleCount];
+                for(int i = 0; i < triangleCount; i++)
+                {
+                    triangles[i] = reader.ReadInt32();
+                }
+
+                // UV座標の復元
+                int uvCount = reader.ReadInt32();
+                Vector2[] uv = new Vector2[uvCount];
+                for(int i = 0; i < uvCount; i++)
+                {
+                    float u = reader.ReadSingle();
+                    float v = reader.ReadSingle();
+                    uv[i] = new Vector2(u, v);
+                }
+
+                // メッシュにデータを設定する
+                mesh.vertices = vertices;
+                mesh.triangles = triangles;
+                mesh.uv = uv;
+            }
+        }
+
+        mesh.RecalculateNormals(); // 必要に応じて法線を再計算するなどの後処理を行う
+
+        return mesh;
+    }
+
 
     public bool metamorphosisflag 
     {

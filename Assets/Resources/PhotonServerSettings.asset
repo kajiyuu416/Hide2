@@ -42,6 +42,10 @@ MonoBehaviour:
   - SyncPlayerInput
   - Hide
   - RPC_SetColor
+  - ExampleRPC
+  - ChangeColorRPC
+  - ChangePlayerMesh
+  - ReceiveMeshData
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
