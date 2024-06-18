@@ -20,7 +20,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private bool lockOnMode;
     private Vector2 leftStickVal;
     private Vector2 rightStickVal;
-    public Vector3 playerMove_input;
+    private Vector3 playerMove_input;
     private Vector3 movedir = Vector3.zero;
     private Animator animator;
     public Camera cloneCamera;

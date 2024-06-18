@@ -8,7 +8,6 @@ using System.IO;
 public class RayCastCS : MonoBehaviourPun
 {
     [SerializeField] GameObject rayHitObject;
-    [SerializeField] Mesh defaultMesh;
     [SerializeField] GameObject metamorphosisEffect;
     [SerializeField] GameObject metamorphosis_unravelEffect;
     public Camera cam;
@@ -16,16 +15,18 @@ public class RayCastCS : MonoBehaviourPun
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
     private Mesh meshColMesh;
+    private Mesh defaultMesh;
     private bool metamorphosisFlag = false;
     Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
     private MeshFilter meshFilter;
-    private MeshRenderer meshRenderer;
+    private SkinnedMeshRenderer skinnedMesh;
 
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
         meshFilter = GetComponent<MeshFilter>();
-        meshRenderer = GetComponent<MeshRenderer>();
+        skinnedMesh = GetComponentInChildren<SkinnedMeshRenderer>();
+        defaultMesh = GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
@@ -72,14 +73,11 @@ public class RayCastCS : MonoBehaviourPun
                 if(hit.collider.CompareTag("metamorphosis") && rayHitObject != hit.collider.gameObject)
                 {
                     rayHitObject = hit.collider.gameObject;
-                    GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = null;
-                    //GetComponent<MeshFilter>().sharedMesh = target_MeshFilter.sharedMesh;
+                    ChangeMesh();
                     GetComponent<MeshCollider>().sharedMesh = meshColMesh;
-                    GameObject metamorphosis = PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
+                    PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
-                    ChangeMesh();
-
                 }
                 if(hit.collider.CompareTag("cube"))
                 {
@@ -97,17 +95,32 @@ public class RayCastCS : MonoBehaviourPun
 
             if(return_Default_KB.wasPressedThisFrame ||return_Default_GP.wasPressedThisFrame)
             {
-                GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh = defaultMesh;
-                GetComponent<MeshFilter>().sharedMesh = null;
-                GetComponent<MeshCollider>().sharedMesh = null;
                 rayHitObject = null;
-                GameObject metamorphosis_unravel = PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
+                ResetPlayerMesh();
+                GetComponent<MeshCollider>().sharedMesh = null;
+                PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
                 playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
-                metamorphosisFlag = false;
+                metamorphosisFlag = false;           
             }
         }
     }
 
+    [PunRPC]
+    public void ResetMesh()
+    {
+        meshFilter.sharedMesh = null;
+        skinnedMesh.sharedMesh = defaultMesh;
+    }
+    [PunRPC]
+    public void ResetSkinnedMesh()
+    {
+        skinnedMesh.sharedMesh = null;
+    }
+
+    public void ResetPlayerMesh()
+    {
+        photonView.RPC("ResetMesh", RpcTarget.All);
+    }
     // メッシュを変更する処理
     public void ChangeMesh()
     {
@@ -115,22 +128,19 @@ public class RayCastCS : MonoBehaviourPun
         Vector3[] vertices = mesh.vertices;
         int[] triangles = mesh.triangles;
         Vector2[] uv = mesh.uv;
-
         // メッシュの情報を送信可能な形式に変換する
         byte[] serializedMeshData = SerializeMeshData(vertices, triangles, uv);
-
         // RPCで他のクライアントに送信する
-
         photonView.RPC("ChangePlayerMesh", RpcTarget.All, serializedMeshData);
+        photonView.RPC("ResetSkinnedMesh", RpcTarget.All);
     }
 
     // メッシュデータを受信して再構築するメソッド
     [PunRPC]
-    void ChangePlayerMesh(byte[] serializedMeshData)
+    public void ChangePlayerMesh(byte[] serializedMeshData)
     {
         // 受信したデータをデシリアライズしてメッシュを再構築する
         Mesh receivedMesh = DeserializeMeshData(serializedMeshData);
-
         // 受信したメッシュを反映する処理を記述する（例えば、自身のMeshFilterに設定するなど）
         meshFilter.sharedMesh = receivedMesh;
     }

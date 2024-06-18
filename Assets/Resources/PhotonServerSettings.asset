@@ -46,6 +46,10 @@ MonoBehaviour:
   - ChangeColorRPC
   - ChangePlayerMesh
   - ReceiveMeshData
+  - ResetPlayerMesh
+  - ResetMesh
+  - ResetMeshFilter
+  - ResetSkinnedMesh
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0
