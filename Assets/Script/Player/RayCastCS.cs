@@ -48,7 +48,7 @@ public class RayCastCS : MonoBehaviourPun
                     target_MeshFilter = raycastHit.collider.gameObject.GetComponent<MeshFilter>();
                     meshColMesh = raycastHit.collider.gameObject.GetComponent<MeshCollider>().sharedMesh;
                     string name = raycastHit.collider.gameObject.name;
-                    Debug.Log(name + "を選択に変身可能です"); // コンソールに表示
+                    Debug.Log(name + "に変身可能です"); // コンソールに表示
                 }
                 else
                 {
