@@ -11,8 +11,8 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private GameManager gameManager;
     private int state = (int) player_state.defaultMode;
     private int oldstate;
-    private float gravity = -9.8f;
-    private float JumpPower = 6.0f;
+    private const float gravity = -9.8f;
+    private const float JumpPower = 6.0f;
     private float movedirY;
     private const float defaultColliderHeight = 1.6f;
     private const float defaultColliderCenter = 0.9f;
