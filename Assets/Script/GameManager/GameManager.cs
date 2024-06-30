@@ -13,10 +13,10 @@ public class GameManager : MonoBehaviour
     private PlayerController playerController;
     private Gamepad gamepad_connection;
     private Keyboard keyboard_connection;
+    public Material[] skyboxs;
 
     private void Start()
     {
- 
         //Cursor.visible = false;
         //Cursor.lockState = CursorLockMode.Locked;
     }
@@ -45,6 +45,11 @@ public class GameManager : MonoBehaviour
             Cursor.lockState = CursorLockMode.None;
         }
     }
+    public void change_sky(int i)
+    {
+        RenderSettings.skybox = skyboxs[i];
+    }
+
     public Gamepad Duplicate_gamepad_connection
     {
         get

@@ -138,14 +138,20 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
             }
         }
     }
-
+    // 特定のオブジェクトにぶつかった場合の処理
     private void OnControllerColliderHit(ControllerColliderHit hit)
     {
-        // 特定のオブジェクトにぶつかった場合の処理
         if(hit.gameObject.CompareTag("ReSet"))
         {
             transform.position = Vector3.zero;
+            gameManager.change_sky(0);
         }
+        if(hit.gameObject.CompareTag("changeArea"))
+        {
+           transform.position =  hit.gameObject.GetComponent<transformStage>().transformPos.position;
+            gameManager.change_sky(1);
+        }
+
     }
 
     private void OnMove(InputValue var)
