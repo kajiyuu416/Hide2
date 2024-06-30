@@ -79,10 +79,6 @@ public class RayCastCS : MonoBehaviourPun
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
                 }
-                if(hit.collider.CompareTag("cube"))
-                {
-                    hit.collider.gameObject.GetComponent<cube>().ChangeColor(Color.black);
-                }
                 Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red);
             }
         }
