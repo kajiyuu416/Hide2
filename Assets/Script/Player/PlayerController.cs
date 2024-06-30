@@ -151,7 +151,6 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
            transform.position =  hit.gameObject.GetComponent<transformStage>().transformPos.position;
             gameManager.change_sky(1);
         }
-
     }
 
     private void OnMove(InputValue var)
