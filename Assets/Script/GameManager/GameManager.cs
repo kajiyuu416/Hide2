@@ -2,8 +2,10 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine.UI;
+
 using UnityEngine;
 using UnityEngine.InputSystem;
+
 
 public class GameManager : MonoBehaviour
 {
@@ -13,12 +15,13 @@ public class GameManager : MonoBehaviour
     private PlayerController playerController;
     private Gamepad gamepad_connection;
     private Keyboard keyboard_connection;
+
     public Material[] skyboxs;
+
 
     private void Start()
     {
-        //Cursor.visible = false;
-        //Cursor.lockState = CursorLockMode.Locked;
+
     }
     private void Update()
     {
