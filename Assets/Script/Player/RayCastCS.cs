@@ -117,6 +117,7 @@ public class RayCastCS : MonoBehaviourPun
     {
         photonView.RPC("ResetMesh", RpcTarget.All);
     }
+
     // メッシュを変更する処理
     public void ChangeMesh()
     {
@@ -124,29 +125,29 @@ public class RayCastCS : MonoBehaviourPun
         Vector3[] vertices = mesh.vertices;
         int[] triangles = mesh.triangles;
         Vector2[] uv = mesh.uv;
-        // メッシュの情報を送信可能な形式に変換する
+        // メッシュの情報を送信可能な形式に変換
         byte[] serializedMeshData = SerializeMeshData(vertices, triangles, uv);
         // RPCで他のクライアントに送信する
         photonView.RPC("ChangePlayerMesh", RpcTarget.All, serializedMeshData);
         photonView.RPC("ResetSkinnedMesh", RpcTarget.All);
     }
 
-    // メッシュデータを受信して再構築するメソッド
+    // メッシュデータを受信して再構築
     [PunRPC]
     public void ChangePlayerMesh(byte[] serializedMeshData)
     {
-        // 受信したデータをデシリアライズしてメッシュを再構築する
+        // 受信したデータをデシリアライズしてメッシュを再構築
         Mesh receivedMesh = DeserializeMeshData(serializedMeshData);
-        // 受信したメッシュを反映する処理を記述する（例えば、自身のMeshFilterに設定するなど）
+        // 受信したメッシュを反映する処理
         meshFilter.sharedMesh = receivedMesh;
     }
 
     // メッシュデータをシリアライズするメソッド
     private byte[] SerializeMeshData(Vector3[] vertices, int[] triangles, Vector2[] uv)
     {
-        // 実際のデータをバイト配列に変換するロジックを実装する
-        // ここでは単純化しているため、空の実装を示します
-        // 頂点データをバイト配列にシリアライズする
+        // 実際のデータをバイト配列に変換するロジックを実装
+        // ここでは単純化しているため、空の実装
+        // 頂点データをバイト配列にシリアライズ
         List<byte> byteStream = new List<byte>();
 
         // 頂点数を先頭に書き込む（整数として）
