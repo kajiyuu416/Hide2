@@ -98,7 +98,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
             options.MaxPlayers = 2;
             PhotonNetwork.CreateRoom(enterRoomName.text, options);
             CloseUI();
-            Debug.Log(enterRoomName.text + "");
             loadingText.text = "ƒ‹[ƒ€ì¬’†...";
             loadingPanel.SetActive(true);
         }

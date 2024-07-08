@@ -12,7 +12,12 @@ public class GameManager :MonoBehaviour
     private const string keyboard_mouse = "Keyboard&Mouse";
     private Gamepad gamepad_connection;
     private Keyboard keyboard_connection;
- 
+
+    private void Start()
+    {
+        Cursor.visible = false;
+        Cursor.lockState = CursorLockMode.Locked;
+    }
 
     private void Update()
     {
