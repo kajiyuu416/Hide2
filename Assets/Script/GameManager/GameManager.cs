@@ -1,31 +1,22 @@
-using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine.UI;
-
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 
-public class GameManager : MonoBehaviour
+public class GameManager :MonoBehaviour
 {
     public Image cursor;
+    public PlayerController playerController;
+    public Material[] skyboxs;
     private const string gamepad = "Gamepad";
     private const string keyboard_mouse = "Keyboard&Mouse";
-    private PlayerController playerController;
     private Gamepad gamepad_connection;
     private Keyboard keyboard_connection;
+ 
 
-    public Material[] skyboxs;
-
-
-    private void Start()
-    {
-
-    }
     private void Update()
     {
-        Operation_identification();
+       Operation_identification();
     }
 
     //キーボードマウス操作、ゲームパット操作の判定
@@ -34,14 +25,18 @@ public class GameManager : MonoBehaviour
         gamepad_connection = Gamepad.current;
         keyboard_connection = Keyboard.current;
 
-        //if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == gamepad)
-        //{
+        if(playerController != null)
+        {
+            if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == gamepad)
+            {
+                Debug.Log(playerController.Duplicate_PlayerInput.currentControlScheme.ToString());
+            }
+            else if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == keyboard_mouse)
+            {
+                Debug.Log(playerController.Duplicate_PlayerInput.currentControlScheme.ToString());
+            }
+        }
 
-        //}
-        //if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == keyboard_mouse)
-        //{
-
-        //}
         if(Input.GetKeyDown(KeyCode.Escape))
         {
             Cursor.visible = true;

@@ -34,7 +34,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     {
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        playerInput = FindObjectOfType<PlayerInput>();
+        playerInput = GetComponent<PlayerInput>();
         raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
         oldstate = state;
@@ -68,14 +68,11 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         Vector3 globaldir = transform.TransformDirection(movedir);
         characterController.Move(new Vector3(movedir.x, movedirY, movedir.z) * Time.deltaTime);
 
-        var Jump_KB = gameManager.Duplicate_keyboard_connection.spaceKey;
-        var Jump_GP = gameManager.Duplicate_gamepad_connection.buttonSouth;
-
         if(characterController.isGrounded)
         {
             movedirY = gravity;
             isfall = false;
-            if(Jump_GP.wasPressedThisFrame || Jump_KB.wasPressedThisFrame)
+            if(gameManager.Duplicate_gamepad_connection.buttonSouth.wasPressedThisFrame || gameManager.Duplicate_keyboard_connection.spaceKey.wasPressedThisFrame)
             {
                 movedirY = JumpPower;
             }
