@@ -46,7 +46,6 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
             if(transform.forward.y < lockOn_upper_limit && rotY < 0|| transform.forward.y > lockOn_lower_limit && rotY > 0)
             {
                 Init(ref rotY);
-  
             }
 
             transform.RotateAround(lookAt, Vector3.up, rotX);
