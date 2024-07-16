@@ -44,9 +44,6 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         {
             Destroy(playerInput);
         }
-        //playerNamelabel = Instantiate(Resources.Load("Prefab/NameLabel")) as GameObject;
-        //playerNamelabel.GetComponent<UILabel>().text =PhotonNetwork.NickName;
-
     }
     private void Update()
     {
@@ -57,10 +54,12 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         Change_State();
         PlayerMove();
         //Debug.Log(PhotonNetwork.NickName);
-        //playerNamelabel.GetComponent<UILabel>().text =
-        //"X:" + transform.position.x.ToString("F2") +
-        //", Z:" + transform.position.z.ToString("F2");
-
+    }
+    public string txt = PhotonNetwork.NickName;
+    private void OnGUI()
+    {
+        Rect rect1 = new Rect(10, 10, 400, 300);
+        GUI.Label(rect1, txt);
     }
     private void PlayerMove()
     {
