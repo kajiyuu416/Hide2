@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
+using Unity.VisualScripting.Dependencies.NCalc;
 
 public class PlayerCamera : Photon.Pun.MonoBehaviourPun
 {
@@ -11,11 +12,14 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private float distanceToPlayerM = 6.0f;    // カメラとプレイヤーとの距離[m]
     private float heightM = 1.3f;            // 注視点の高さ[m]          // 注視点の高さ[m]
     private float SlideDistanceM = 0.0f;       // カメラを横にスライドさせる；プラスの時右へ，マイナスの時左へ[m]
-    private float RotationSensitivity = 300.0f;// 初期感度
+    private static float RotationSensitivity = 300.0f;// 初期感度
+    private float lockOnRotationSensitivity = RotationSensitivity / 2;
+    private float lockOffRotationSensitivity = RotationSensitivity;
     private const float min_distanceToPlayerM = 4.0f;
     private const float max_distanceToPlayerM = 6.0f;
     private const float max_slidedistanceM = 1.0f;
     private Camera camera;
+
     private void Start()
     {
         camera = GetComponent<Camera>();
@@ -64,18 +68,18 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
 
+
         var changelock_GP = Gamepad.current.leftShoulder;
-        if(changelock_GP.wasPressedThisFrame || Input.GetMouseButton(1))
-        {
-            var lockOnRotationSensitivity = RotationSensitivity / 2;
+   
+        if(changelock_GP.wasPressedThisFrame || Input.GetMouseButtonDown(1))
+        {   
+            RotationSensitivity = lockOnRotationSensitivity;
             distanceToPlayerM = min_distanceToPlayerM;
             SlideDistanceM = max_slidedistanceM;
-            RotationSensitivity = lockOnRotationSensitivity;
             playerController.Duplicate_lockOnMode = true;
         }
         else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
         {
-            var lockOffRotationSensitivity = RotationSensitivity;
             playerController.Duplicate_lockOnMode = false;
             distanceToPlayerM = max_distanceToPlayerM;
             SlideDistanceM = 0f;

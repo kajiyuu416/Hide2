@@ -12,6 +12,7 @@ public class RayCastCS : MonoBehaviourPun
     [SerializeField] GameObject metamorphosis_unravelEffect;
     public Camera cam;
     public PlayerController playerController;
+    private const float raydis = 10.0f;
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
     private Mesh meshColMesh;
@@ -40,7 +41,7 @@ public class RayCastCS : MonoBehaviourPun
             gameManager.cursor.enabled = true;
             Ray ray = cam.ScreenPointToRay(center);
             RaycastHit raycastHit;
-            if(Physics.Raycast(ray, out raycastHit))
+            if(Physics.Raycast(ray, out raycastHit, raydis))
             {
                 if(raycastHit.collider.CompareTag("metamorphosis"))
                 {
@@ -60,6 +61,7 @@ public class RayCastCS : MonoBehaviourPun
         else if(!playerController.Duplicate_lockOnMode)
         {
             gameManager.cursor.enabled = false;
+            gameManager.cursor.color = Color.blue;
 
         }
         //オブジェクトへ変身
@@ -67,8 +69,7 @@ public class RayCastCS : MonoBehaviourPun
         {
             Ray ray = cam.ScreenPointToRay(center);
             RaycastHit hit;
-            int Raydis = 10;
-            if(Physics.Raycast(ray, out hit))
+            if(Physics.Raycast(ray, out hit,raydis))
             {
                 if(hit.collider.CompareTag("metamorphosis") && rayHitObject != hit.collider.gameObject)
                 {
@@ -79,7 +80,7 @@ public class RayCastCS : MonoBehaviourPun
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
                 }
-                Debug.DrawRay(ray.origin, ray.direction * Raydis, Color.red);
+                Debug.DrawRay(ray.origin, ray.direction * raydis, Color.red);
             }
         }
 

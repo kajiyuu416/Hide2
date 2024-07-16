@@ -1,7 +1,6 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
-using UnityEngine.SceneManagement;
 using Photon.Pun;
 public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
@@ -12,7 +11,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private int state = (int) player_state.defaultMode;
     private int oldstate;
     private const float gravity = -9.8f;
-    private const float JumpPower = 6.0f;
+    private const float JumpPower = 5.0f;
     private float movedirY;
     private const float defaultColliderHeight = 1.6f;
     private const float defaultColliderCenter = 0.9f;
@@ -25,6 +24,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private Animator animator;
     public Camera cloneCamera;
     private PlayerInput playerInput;
+    private GameObject playerNamelabel;
     public enum player_state
     {
         defaultMode, metamorphosisMode
@@ -37,12 +37,16 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         playerInput = GetComponent<PlayerInput>();
         raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
+        playerNamelabel = GetComponent<GameObject>();
         oldstate = state;
 
         if(!photonView.IsMine)
         {
             Destroy(playerInput);
         }
+        //playerNamelabel = Instantiate(Resources.Load("Prefab/NameLabel")) as GameObject;
+        //playerNamelabel.GetComponent<UILabel>().text =PhotonNetwork.NickName;
+
     }
     private void Update()
     {
@@ -52,6 +56,11 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         }
         Change_State();
         PlayerMove();
+        //Debug.Log(PhotonNetwork.NickName);
+        //playerNamelabel.GetComponent<UILabel>().text =
+        //"X:" + transform.position.x.ToString("F2") +
+        //", Z:" + transform.position.z.ToString("F2");
+
     }
     private void PlayerMove()
     {
