@@ -2,6 +2,8 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
+using UnityEngine.UI;
+using TMPro;
 public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
     private float moveSpeed = 8.0f;
@@ -24,7 +26,8 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private Animator animator;
     public Camera cloneCamera;
     private PlayerInput playerInput;
-    private GameObject playerNamelabel;
+    private GameObject namePlate;
+    public TextMeshProUGUI nameText;
     public enum player_state
     {
         defaultMode, metamorphosisMode
@@ -37,13 +40,16 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         playerInput = GetComponent<PlayerInput>();
         raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
-        playerNamelabel = GetComponent<GameObject>();
         oldstate = state;
 
         if(!photonView.IsMine)
         {
             Destroy(playerInput);
         }
+    }
+    private void Start()
+    {
+        namePlate = nameText.transform.parent.gameObject;
     }
     private void Update()
     {
@@ -55,11 +61,18 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         PlayerMove();
         //Debug.Log(PhotonNetwork.NickName);
     }
-    public string txt = PhotonNetwork.NickName;
-    private void OnGUI()
+    private void LateUpdate()
     {
-        Rect rect1 = new Rect(10, 10, 400, 300);
-        GUI.Label(rect1, txt);
+        if(!photonView.IsMine || cloneCamera == null)
+        {
+            return;
+        }
+        namePlate.transform.rotation = cloneCamera.transform.rotation;
+    }
+    [PunRPC]
+    public void SetName(string name)
+    {
+        nameText.text = name;
     }
     private void PlayerMove()
     {

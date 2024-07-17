@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.InputSystem;
 using System.Collections.Generic;
+using Photon.Realtime;
 
 public class PlayerInstance : Photon.Pun.MonoBehaviourPun
 {
@@ -36,6 +37,7 @@ public class PlayerInstance : Photon.Pun.MonoBehaviourPun
         Transform playertrans = pobj.GetComponent<Transform>();
         PlayerCamera pcamsc = cobj.GetComponent<PlayerCamera>();
         Camera pcam = cobj.GetComponent<Camera>();
+        pobj.GetPhotonView().RPC("SetName", RpcTarget.AllBuffered, PhotonNetwork.NickName);
         gameManager.playerController = playercon;
         raycs.cam = pcam;
         playercon.cloneCamera = pcam;

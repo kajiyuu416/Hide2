@@ -50,6 +50,7 @@ MonoBehaviour:
   - ResetMesh
   - ResetMeshFilter
   - ResetSkinnedMesh
+  - SetName
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 0

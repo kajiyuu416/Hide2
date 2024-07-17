@@ -276,11 +276,13 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         playerTextGeneration(newPlayer);
+        Debug.Log("Playerが新たに入室しました。");
     }
     //プレイヤーが退室した時に呼ばれる関数(プレイヤー情報の更新)
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         GetAllPlayer();
+        Debug.Log("Playerが退室しました。");
     }
     //ホストのみゲームが開始できる表ボタンの表示
     public void CheckRoomHost()
