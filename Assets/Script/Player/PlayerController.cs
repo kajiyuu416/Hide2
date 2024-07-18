@@ -60,8 +60,6 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         }
         Change_State();
         PlayerMove();
-        //Debug.Log(PhotonNetwork.NickName);
-        Debug.Log(characterController.detectCollisions);
     }
     private void LateUpdate()
     {
@@ -132,8 +130,8 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
 
     private void Change_State()
     {
-        var metamorphosis_height = 1.1f;
-        var metamorphosis_center = 0.7f;
+        var metamorphosis_height = 0.5f;
+        var metamorphosis_center = 0.4f;
         var litleJump = 4;
         if(state != oldstate)
         {
@@ -141,20 +139,20 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
             switch(state)
             {
                 case (int) player_state.defaultMode:
+                    movedirY = litleJump;
                     characterController.height = defaultColliderHeight;
                     characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
-                    movedirY = litleJump;
                     characterController.detectCollisions = true;
-                    photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered,characterController.height, characterController.radius);
-                    Debug.Log("default");
+                    photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered, characterController.height, characterController.radius, characterController.center,characterController.detectCollisions);
+                    Debug.Log("defaultMode");
                     break;
 
                 case (int) player_state.metamorphosisMode:
                     characterController.height = metamorphosis_height;
                     characterController.center = new Vector3(characterController.center.x, metamorphosis_center, characterController.center.z);
-                    photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered, characterController.height, characterController.radius);
                     characterController.detectCollisions = false;
-                    Debug.Log("metamor");
+                    photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered, characterController.height, characterController.radius, characterController.center, characterController.detectCollisions);
+                    Debug.Log("metamorMode");
                     break;
 
                 default:
@@ -178,14 +176,15 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     }
 
     [PunRPC]
-    void SyncPlayerSize(float height, float radius)
+    public void SyncPlayerSize(float height, float radius,Vector3 center, bool detectCollisions)
     {
         // 自身以外のプレイヤーの場合、大きさを設定する
         if(!photonView.IsMine)
         {
             characterController.height = height;
             characterController.radius = radius;
-            characterController.detectCollisions = false;
+            characterController.center = center;
+            characterController.detectCollisions = detectCollisions;
         }
     }
 
