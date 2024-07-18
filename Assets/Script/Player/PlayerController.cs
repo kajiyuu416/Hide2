@@ -4,6 +4,7 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using UnityEngine.UI;
 using TMPro;
+using UnityEngine.InputSystem.XR;
 public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
     private float moveSpeed = 8.0f;
@@ -60,6 +61,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         Change_State();
         PlayerMove();
         //Debug.Log(PhotonNetwork.NickName);
+        Debug.Log(characterController.detectCollisions);
     }
     private void LateUpdate()
     {
@@ -142,12 +144,16 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
                     characterController.height = defaultColliderHeight;
                     characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
                     movedirY = litleJump;
+                    characterController.detectCollisions = true;
+                    photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered,characterController.height, characterController.radius);
                     Debug.Log("default");
                     break;
 
                 case (int) player_state.metamorphosisMode:
                     characterController.height = metamorphosis_height;
                     characterController.center = new Vector3(characterController.center.x, metamorphosis_center, characterController.center.z);
+                    photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered, characterController.height, characterController.radius);
+                    characterController.detectCollisions = false;
                     Debug.Log("metamor");
                     break;
 
@@ -168,6 +174,18 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         {
            transform.position =  hit.gameObject.GetComponent<transformStage>().transformPos.position;
             gameManager.change_sky(1);
+        }
+    }
+
+    [PunRPC]
+    void SyncPlayerSize(float height, float radius)
+    {
+        // 自身以外のプレイヤーの場合、大きさを設定する
+        if(!photonView.IsMine)
+        {
+            characterController.height = height;
+            characterController.radius = radius;
+            characterController.detectCollisions = false;
         }
     }
 

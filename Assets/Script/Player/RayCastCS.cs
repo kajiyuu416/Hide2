@@ -15,12 +15,13 @@ public class RayCastCS : MonoBehaviourPun
     private const float raydis = 10.0f;
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
+    private MeshFilter meshFilter;
     private Mesh meshColMesh;
     private Mesh defaultMesh;
-    private bool metamorphosisFlag = false;
-    Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
-    private MeshFilter meshFilter;
     private SkinnedMeshRenderer skinnedMesh;
+    private bool metamorphosisFlag = false;
+    private Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
+
 
     private void Start()
     {
@@ -28,6 +29,7 @@ public class RayCastCS : MonoBehaviourPun
         meshFilter = GetComponent<MeshFilter>();
         skinnedMesh = GetComponentInChildren<SkinnedMeshRenderer>();
         defaultMesh = GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
+
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
@@ -79,6 +81,8 @@ public class RayCastCS : MonoBehaviourPun
                     PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
+                    string name = hit.collider.gameObject.name;
+                    Debug.Log(name + "変身しました"); // コンソールに表示
                 }
                 Debug.DrawRay(ray.origin, ray.direction * raydis, Color.red);
             }
