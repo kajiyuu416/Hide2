@@ -12,9 +12,10 @@ public class PlayerInstance : Photon.Pun.MonoBehaviourPun
     private void Start()
     {
         PhotonNetwork.IsMessageQueueRunning = true;
-        var position = new Vector3(Random.Range(-3f, 3f), 0, Random.Range(-3f, 3f));
-        GameObject pobj = PhotonNetwork.Instantiate("character", position, Quaternion.identity);
-        GameObject cobj = PhotonNetwork.Instantiate("camera", Vector3.zero, Quaternion.identity);
+        var position = new Vector3(transform.position.x + Random.Range(-3f, 3f), transform.position.y, transform.position.z + Random.Range(-3f, 3f));
+        Quaternion currentRotation = transform.rotation;
+        GameObject pobj = PhotonNetwork.Instantiate("character", position, currentRotation);
+        GameObject cobj = PhotonNetwork.Instantiate("camera", Vector3.zero, currentRotation);
         gameManager = FindObjectOfType<GameManager>();
         StartCoroutine(WaitForInitialization(pobj,cobj));
 

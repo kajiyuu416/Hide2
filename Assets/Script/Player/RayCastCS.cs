@@ -12,15 +12,16 @@ public class RayCastCS : MonoBehaviourPun
     [SerializeField] GameObject metamorphosis_unravelEffect;
     public Camera cam;
     public PlayerController playerController;
-    private const float raydis = 10.0f;
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
-    private MeshCollider target_MeshCollider;
     private MeshFilter meshFilter;
+    private MeshCollider target_MeshCollider;
     private MeshCollider meshCollider;
     private Mesh defaultMesh;
     private SkinnedMeshRenderer skinnedMesh;
     private bool metamorphosisFlag = false;
+    private const float raydis = 10.0f;
+    private const string metamorphosisTag = "metamorphosis";
     private Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
 
 
@@ -38,56 +39,51 @@ public class RayCastCS : MonoBehaviourPun
     {
         if(!photonView.IsMine || playerController == null)
             return;
-
-        var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
         if(playerController.Duplicate_lockOnMode)
         {
+            var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
+
             gameManager.cursor.enabled = true;
             Ray ray = cam.ScreenPointToRay(center);
             RaycastHit raycastHit;
             if(Physics.Raycast(ray, out raycastHit, raydis))
             {
-                if(raycastHit.collider.CompareTag("metamorphosis"))
+                if(raycastHit.collider.CompareTag(metamorphosisTag))
                 {
                     gameManager.cursor.color = Color.red;
-                    string name = raycastHit.collider.gameObject.name;
-                    Debug.Log(name + "に変身可能です"); // コンソールに表示
                 }
                 else
                 {
                     gameManager.cursor.color = Color.blue;
                 }
             }
-            Debug.DrawRay(ray.origin, ray.direction * 10, Color.yellow);
+            Debug.DrawRay(ray.origin, ray.direction * raydis, Color.green);
+            //オブジェクトへ変身
+            if(Input.GetMouseButtonDown(0) || changeGP.wasPressedThisFrame)
+            {
+                Ray _ray = cam.ScreenPointToRay(center);
+                RaycastHit hit;
+                if(Physics.Raycast(_ray, out hit, raydis))
+                {
+                    if(hit.collider.CompareTag(metamorphosisTag) && rayHitObject != hit.collider.gameObject)
+                    {
+                        rayHitObject = hit.collider.gameObject;
+                        target_MeshFilter = rayHitObject.GetComponent<MeshFilter>();
+                        target_MeshCollider = rayHitObject.GetComponent<MeshCollider>();
+                        ChangeMesh();
+                        PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
+                        playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
+                        metamorphosisFlag = true;
+                    }
+                    Debug.DrawRay(_ray.origin, _ray.direction * raydis, Color.red);
+                }
+            }
         }
         else if(!playerController.Duplicate_lockOnMode)
         {
             gameManager.cursor.enabled = false;
             gameManager.cursor.color = Color.blue;
 
-        }
-        //オブジェクトへ変身
-        if(Input.GetMouseButtonDown(0) || changeGP.wasPressedThisFrame)
-        {
-            Ray ray = cam.ScreenPointToRay(center);
-            RaycastHit hit;
-            if(Physics.Raycast(ray, out hit,raydis))
-            {
-                if(hit.collider.CompareTag("metamorphosis") && rayHitObject != hit.collider.gameObject)
-                {
-                    rayHitObject = hit.collider.gameObject;
-                    target_MeshFilter = rayHitObject.GetComponent<MeshFilter>();
-                    target_MeshCollider = rayHitObject.GetComponent<MeshCollider>();
-
-                    ChangeMesh();
-                    PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
-                    playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
-                    metamorphosisFlag = true;
-                    string name = hit.collider.gameObject.name;
-                    Debug.Log(name + "変身しました"); // コンソールに表示
-                }
-                Debug.DrawRay(ray.origin, ray.direction * raydis, Color.red);
-            }
         }
 
         //変身解除
@@ -232,7 +228,6 @@ public class RayCastCS : MonoBehaviourPun
         }
 
         mesh.RecalculateNormals(); // 必要に応じて法線を再計算するなどの後処理を行う
-
         return mesh;
     }
 

@@ -15,8 +15,8 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private static float RotationSensitivity = 300.0f;// èâä˙ä¥ìx
     private float lockOnRotationSensitivity = RotationSensitivity / 2;
     private float lockOffRotationSensitivity = RotationSensitivity;
-    private const float min_distanceToPlayerM = 4.0f;
-    private const float max_distanceToPlayerM = 6.0f;
+    private const float min_distanceToPlayerM = 5.0f;
+    private const float max_distanceToPlayerM = 7.0f;
     private const float max_slidedistanceM = 1.0f;
     private Camera camera;
 
@@ -30,6 +30,28 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         else
         {
             camera.targetDisplay = 1;
+        }
+    }
+    private void Update()
+    {
+        if(!photonView.IsMine || playerController == null || target == null)
+            return;
+
+        var changelock_GP = Gamepad.current.leftShoulder;
+
+        if(changelock_GP.wasPressedThisFrame || Input.GetMouseButtonDown(1))
+        {
+            RotationSensitivity = lockOnRotationSensitivity;
+            distanceToPlayerM = min_distanceToPlayerM;
+            SlideDistanceM = max_slidedistanceM;
+            playerController.Duplicate_lockOnMode = true;
+        }
+        else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
+        {
+            playerController.Duplicate_lockOnMode = false;
+            distanceToPlayerM = max_distanceToPlayerM;
+            SlideDistanceM = 0f;
+            RotationSensitivity = lockOffRotationSensitivity;
         }
     }
     // Update is called once per frame
@@ -67,24 +89,6 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
 
         transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
-
-
-        var changelock_GP = Gamepad.current.leftShoulder;
-   
-        if(changelock_GP.wasPressedThisFrame || Input.GetMouseButtonDown(1))
-        {   
-            RotationSensitivity = lockOnRotationSensitivity;
-            distanceToPlayerM = min_distanceToPlayerM;
-            SlideDistanceM = max_slidedistanceM;
-            playerController.Duplicate_lockOnMode = true;
-        }
-        else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
-        {
-            playerController.Duplicate_lockOnMode = false;
-            distanceToPlayerM = max_distanceToPlayerM;
-            SlideDistanceM = 0f;
-            RotationSensitivity = lockOffRotationSensitivity;
-        }
     }
     private void Init(ref float val)
     {
