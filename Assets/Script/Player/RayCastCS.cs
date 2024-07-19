@@ -15,8 +15,9 @@ public class RayCastCS : MonoBehaviourPun
     private const float raydis = 10.0f;
     private GameManager gameManager;
     private MeshFilter target_MeshFilter;
+    private MeshCollider target_MeshCollider;
     private MeshFilter meshFilter;
-    private Mesh meshColMesh;
+    private MeshCollider meshCollider;
     private Mesh defaultMesh;
     private SkinnedMeshRenderer skinnedMesh;
     private bool metamorphosisFlag = false;
@@ -27,6 +28,7 @@ public class RayCastCS : MonoBehaviourPun
     {
         gameManager = FindObjectOfType<GameManager>();
         meshFilter = GetComponent<MeshFilter>();
+        meshCollider = GetComponent<MeshCollider>();
         skinnedMesh = GetComponentInChildren<SkinnedMeshRenderer>();
         defaultMesh = GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
 
@@ -48,8 +50,6 @@ public class RayCastCS : MonoBehaviourPun
                 if(raycastHit.collider.CompareTag("metamorphosis"))
                 {
                     gameManager.cursor.color = Color.red;
-                    target_MeshFilter = raycastHit.collider.gameObject.GetComponent<MeshFilter>();
-                    meshColMesh = raycastHit.collider.gameObject.GetComponent<MeshCollider>().sharedMesh;
                     string name = raycastHit.collider.gameObject.name;
                     Debug.Log(name + "に変身可能です"); // コンソールに表示
                 }
@@ -76,8 +76,10 @@ public class RayCastCS : MonoBehaviourPun
                 if(hit.collider.CompareTag("metamorphosis") && rayHitObject != hit.collider.gameObject)
                 {
                     rayHitObject = hit.collider.gameObject;
+                    target_MeshFilter = rayHitObject.GetComponent<MeshFilter>();
+                    target_MeshCollider = rayHitObject.GetComponent<MeshCollider>();
+
                     ChangeMesh();
-                    GetComponent<MeshCollider>().sharedMesh = meshColMesh;
                     PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
@@ -98,24 +100,11 @@ public class RayCastCS : MonoBehaviourPun
             {
                 rayHitObject = null;
                 ResetPlayerMesh();
-                GetComponent<MeshCollider>().sharedMesh = null;
                 PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
                 playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
                 metamorphosisFlag = false;           
             }
         }
-    }
-
-    [PunRPC]
-    public void ResetMesh()
-    {
-        meshFilter.sharedMesh = null;
-        skinnedMesh.sharedMesh = defaultMesh;
-    }
-    [PunRPC]
-    public void ResetSkinnedMesh()
-    {
-        skinnedMesh.sharedMesh = null;
     }
 
     public void ResetPlayerMesh()
@@ -134,7 +123,6 @@ public class RayCastCS : MonoBehaviourPun
         byte[] serializedMeshData = SerializeMeshData(vertices, triangles, uv);
         // RPCで他のクライアントに送信する
         photonView.RPC("ChangePlayerMesh", RpcTarget.All, serializedMeshData);
-        photonView.RPC("ResetSkinnedMesh", RpcTarget.All);
     }
 
     // メッシュデータを受信して再構築
@@ -142,16 +130,25 @@ public class RayCastCS : MonoBehaviourPun
     public void ChangePlayerMesh(byte[] serializedMeshData)
     {
         // 受信したデータをデシリアライズしてメッシュを再構築
-        Mesh receivedMesh = DeserializeMeshData(serializedMeshData);
-        // 受信したメッシュを反映する処理
-        meshFilter.sharedMesh = receivedMesh;
-    }
+         Mesh receivedMesh = DeserializeMeshData(serializedMeshData);
 
+        // 受信したメッシュを反映する処理
+        skinnedMesh.sharedMesh = null;
+        meshFilter.sharedMesh = receivedMesh;
+        meshCollider.sharedMesh = receivedMesh;
+    }
+    // メッシュデータのリセット
+    [PunRPC]
+    public void ResetMesh()
+    {
+        meshFilter.sharedMesh = null;
+        meshCollider.sharedMesh = null;
+        skinnedMesh.sharedMesh = defaultMesh;
+    }
     // メッシュデータをシリアライズするメソッド
     private byte[] SerializeMeshData(Vector3[] vertices, int[] triangles, Vector2[] uv)
     {
-        // 実際のデータをバイト配列に変換するロジックを実装
-        // ここでは単純化しているため、空の実装
+        // 実際のデータをバイト配列に変換
         // 頂点データをバイト配列にシリアライズ
         List<byte> byteStream = new List<byte>();
 
@@ -166,7 +163,7 @@ public class RayCastCS : MonoBehaviourPun
             byteStream.AddRange(BitConverter.GetBytes(vertex.z));
         }
 
-        // 三角形インデックスの数を次に書き込む（整数として）
+        // 三角形インデックスの数を次に書き込む
         byteStream.AddRange(BitConverter.GetBytes(triangles.Length));
 
         // 三角形インデックスを順番にバイト配列に追加する
@@ -175,7 +172,7 @@ public class RayCastCS : MonoBehaviourPun
             byteStream.AddRange(BitConverter.GetBytes(triangleIndex));
         }
 
-        // UV座標の数を次に書き込む（整数として）
+        // UV座標の数を次に書き込む
         byteStream.AddRange(BitConverter.GetBytes(uv.Length));
 
         // UV座標を順番にバイト配列に追加する
@@ -192,10 +189,8 @@ public class RayCastCS : MonoBehaviourPun
     // メッシュデータをデシリアライズしてMeshオブジェクトを再構築するメソッド
     private Mesh DeserializeMeshData(byte[] serializedMeshData)
     {
-        // 実際のデシリアライズのロジックを実装する
-        // ここでは単純化しているため、空の実装を示します
+        // 実際のデシリアライズのロジックを実装
         Mesh mesh = new Mesh();
-
         using(MemoryStream stream = new MemoryStream(serializedMeshData))
         {
             using(BinaryReader reader = new BinaryReader(stream))

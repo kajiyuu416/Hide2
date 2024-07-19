@@ -17,6 +17,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private const float JumpPower = 5.0f;
     private float movedirY;
     private const float defaultColliderHeight = 1.6f;
+    private const float defaultColliderRadius = 0.3f;
     private const float defaultColliderCenter = 0.9f;
     private bool isfall;
     private bool lockOnMode;
@@ -130,8 +131,9 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
 
     private void Change_State()
     {
-        var metamorphosis_height = 0.5f;
-        var metamorphosis_center = 0.4f;
+        var metamorphosis_center = 0.3f;
+        var metamorphosis_radius = 0.2f;
+        var metamorphosis_height = 0.2f;
         var litleJump = 4;
         if(state != oldstate)
         {
@@ -140,16 +142,18 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
             {
                 case (int) player_state.defaultMode:
                     movedirY = litleJump;
-                    characterController.height = defaultColliderHeight;
                     characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
+                    characterController.radius = defaultColliderRadius;
+                    characterController.height = defaultColliderHeight;
                     characterController.detectCollisions = true;
                     photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered, characterController.height, characterController.radius, characterController.center,characterController.detectCollisions);
                     Debug.Log("defaultMode");
                     break;
 
                 case (int) player_state.metamorphosisMode:
-                    characterController.height = metamorphosis_height;
                     characterController.center = new Vector3(characterController.center.x, metamorphosis_center, characterController.center.z);
+                    characterController.radius = metamorphosis_radius;
+                    characterController.height = metamorphosis_height;
                     characterController.detectCollisions = false;
                     photonView.RPC("SyncPlayerSize", RpcTarget.AllBuffered, characterController.height, characterController.radius, characterController.center, characterController.detectCollisions);
                     Debug.Log("metamorMode");
@@ -175,6 +179,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         }
     }
 
+    // プレイヤーの変身形態が切り替わった時に呼ばれる
     [PunRPC]
     public void SyncPlayerSize(float height, float radius,Vector3 center, bool detectCollisions)
     {

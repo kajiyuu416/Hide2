@@ -5199,6 +5199,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lantern
       objectReference: {fileID: 0}
+    - target: {fileID: 5067129496528811823, guid: f048ecd1c9e056542b4c3d5762043fe6, type: 3}
+      propertyPath: m_TagString
+      value: metamorphosis
+      objectReference: {fileID: 0}
     - target: {fileID: 8073079150079247676, guid: f048ecd1c9e056542b4c3d5762043fe6, type: 3}
       propertyPath: m_RootOrder
       value: 0
@@ -23071,6 +23075,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Bench
       objectReference: {fileID: 0}
+    - target: {fileID: 7190407247491102455, guid: ed1dfd226a8bf2f418f812b254707036, type: 3}
+      propertyPath: m_TagString
+      value: metamorphosis
+      objectReference: {fileID: 0}
     - target: {fileID: 7190407247491394263, guid: ed1dfd226a8bf2f418f812b254707036, type: 3}
       propertyPath: m_RootOrder
       value: 4
@@ -24677,6 +24685,10 @@ PrefabInstance:
     - target: {fileID: 8471543608976129559, guid: 28ad12c91132e2545a2852114dacba0d, type: 3}
       propertyPath: m_Name
       value: Flower_2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8471543608976129559, guid: 28ad12c91132e2545a2852114dacba0d, type: 3}
+      propertyPath: m_TagString
+      value: metamorphosis
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 28ad12c91132e2545a2852114dacba0d, type: 3}
