@@ -84,7 +84,7 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
             {
                 Vector3 directionToPlayer = target.position - camera.transform.position;
                 RaycastHit hit;
-                var raydis = 8.0f;
+                var raydis = 7.0f;
                 if(Physics.Raycast(camera.transform.position, directionToPlayer, out hit, raydis))
                 {
                     if(hit.collider.gameObject == renderer.gameObject)
