@@ -137,8 +137,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   target: {fileID: 0}
   playerController: {fileID: 0}
-  prevRaycast: []
-  raycastHitsList_: []
+  obstructingLayer:
+    serializedVersion: 2
+    m_Bits: 128
+  transparentShader: {fileID: 4800000, guid: ca5f765124af36c4d8f6fceba999e39e, type: 3}
+  transparentColor: {r: 1, g: 1, b: 1, a: 0.87058824}
 --- !u!114 &6206119981821542942
 MonoBehaviour:
   m_ObjectHideFlags: 0
