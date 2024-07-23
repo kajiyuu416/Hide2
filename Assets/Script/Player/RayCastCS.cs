@@ -13,6 +13,7 @@ public class RayCastCS : MonoBehaviourPun
     public Camera cam;
     public PlayerController playerController;
     private GameManager gameManager;
+    private GameOption gameOption;
     private MeshFilter target_MeshFilter;
     private MeshFilter meshFilter;
     private MeshCollider target_MeshCollider;
@@ -28,6 +29,7 @@ public class RayCastCS : MonoBehaviourPun
     private void Start()
     {
         gameManager = FindObjectOfType<GameManager>();
+        gameOption = FindObjectOfType<GameOption>();
         meshFilter = GetComponent<MeshFilter>();
         meshCollider = GetComponent<MeshCollider>();
         skinnedMesh = GetComponentInChildren<SkinnedMeshRenderer>();
@@ -38,7 +40,15 @@ public class RayCastCS : MonoBehaviourPun
     private void Update()
     {
         if(!photonView.IsMine || playerController == null)
+        {
             return;
+        }
+        if(!gameOption.Duplicate_openOption)
+            Player_metamorphosis();
+    }
+
+    private void Player_metamorphosis()
+    {
         if(playerController.Duplicate_lockOnMode)
         {
             var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
@@ -92,13 +102,13 @@ public class RayCastCS : MonoBehaviourPun
             var return_Default_KB = gameManager.Duplicate_keyboard_connection.ctrlKey;
             var return_Default_GP = gameManager.Duplicate_gamepad_connection.buttonNorth;
 
-            if(return_Default_KB.wasPressedThisFrame ||return_Default_GP.wasPressedThisFrame)
+            if(return_Default_KB.wasPressedThisFrame || return_Default_GP.wasPressedThisFrame)
             {
                 rayHitObject = null;
                 ResetPlayerMesh();
                 PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
                 playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
-                metamorphosisFlag = false;           
+                metamorphosisFlag = false;
             }
         }
     }

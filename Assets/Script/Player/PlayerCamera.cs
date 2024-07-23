@@ -24,6 +24,7 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private const float max_distanceToPlayerM = 7.0f;
     private const float max_slidedistanceM = 1.0f;
     private Camera camera;
+    private GameOption gameOption;
 
     private void Start()
     {
@@ -37,29 +38,14 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
             camera.targetDisplay = 1;
         }
         renderers = FindObjectsOfType<Renderer>();
+        gameOption = FindObjectOfType<GameOption>();
     }
     private void Update()
     {
         if(!photonView.IsMine || playerController == null || target == null)
             return;
-
-        var changelock_GP = Gamepad.current.leftShoulder;
-        if(changelock_GP.wasPressedThisFrame || Input.GetMouseButtonDown(1))
-        {
-            RotationSensitivity = lockOnRotationSensitivity;
-            distanceToPlayerM = min_distanceToPlayerM;
-            SlideDistanceM = max_slidedistanceM;
-            playerController.Duplicate_lockOnMode = true;
-        }
-        else if(changelock_GP.wasReleasedThisFrame || Input.GetMouseButtonUp(1))
-        {
-            playerController.Duplicate_lockOnMode = false;
-            distanceToPlayerM = max_distanceToPlayerM;
-            SlideDistanceM = 0f;
-            RotationSensitivity = lockOffRotationSensitivity;
-        }
-
-       
+        if(!gameOption.Duplicate_openOption)
+            lockOn();
     }
 
 
@@ -113,6 +99,26 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         }
     }
 
+    private void lockOn()
+    {
+
+        var changelock_GP = Gamepad.current.leftShoulder;
+        if(changelock_GP.isPressed || Input.GetMouseButton(1))
+        {
+            RotationSensitivity = lockOnRotationSensitivity;
+            distanceToPlayerM = min_distanceToPlayerM;
+            SlideDistanceM = max_slidedistanceM;
+            playerController.Duplicate_lockOnMode = true;
+        }
+        else
+        {
+            playerController.Duplicate_lockOnMode = false;
+            distanceToPlayerM = max_distanceToPlayerM;
+            SlideDistanceM = 0f;
+            RotationSensitivity = lockOffRotationSensitivity;
+        }
+    }
+
 
     private void lockOnstatechange()
     {
@@ -124,27 +130,30 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         float lockOn_upper_limit = -0.6f;
         float lockOn_lower_limit = 0.5f;
 
-        if(playerController.Duplicate_lockOnMode)
+        if(!gameOption.Duplicate_openOption)
         {
-            if(transform.forward.y < lockOn_upper_limit && rotY < 0 || transform.forward.y > lockOn_lower_limit && rotY > 0)
+            if(playerController.Duplicate_lockOnMode)
             {
-                Init(ref rotY);
-            }
+                if(transform.forward.y < lockOn_upper_limit && rotY < 0 || transform.forward.y > lockOn_lower_limit && rotY > 0)
+                {
+                    Init(ref rotY);
+                }
 
-            transform.RotateAround(lookAt, Vector3.up, rotX);
-            transform.RotateAround(lookAt, -transform.right, rotY);
-        }
-        else if(!playerController.Duplicate_lockOnMode)
-        {
-            if(transform.forward.y > upper_limit && rotY < 0 || transform.forward.y < lower_limit && rotY > 0)
+                transform.RotateAround(lookAt, Vector3.up, rotX);
+                transform.RotateAround(lookAt, -transform.right, rotY);
+            }
+            else if(!playerController.Duplicate_lockOnMode)
             {
-                Init(ref rotY);
+                if(transform.forward.y > upper_limit && rotY < 0 || transform.forward.y < lower_limit && rotY > 0)
+                {
+                    Init(ref rotY);
+                }
+                transform.RotateAround(lookAt, Vector3.up, rotX);
+                transform.RotateAround(lookAt, transform.right, rotY);
             }
-            transform.RotateAround(lookAt, Vector3.up, rotX);
-            transform.RotateAround(lookAt, transform.right, rotY);
         }
-
         transform.position = lookAt - transform.forward * distanceToPlayerM;
         transform.position = transform.position + transform.right * SlideDistanceM;
     }
+
 }

@@ -11,10 +11,11 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private RayCastCS raycastCS;
     private CharacterController characterController;
     private GameManager gameManager;
+    private GameOption gameOption;
     private int state = (int) player_state.defaultMode;
     private int oldstate;
     private const float gravity = -9.8f;
-    private const float JumpPower = 5.0f;
+    private const float JumpPower = 8.0f;
     private float movedirY;
     private const float defaultColliderHeight = 1.6f;
     private const float defaultColliderRadius = 0.3f;
@@ -42,6 +43,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         playerInput = GetComponent<PlayerInput>();
         raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
+        gameOption = FindObjectOfType<GameOption>();
         oldstate = state;
 
         if(!photonView.IsMine)
@@ -77,20 +79,52 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     }
     private void PlayerMove()
     {
-        if(!photonView.IsMine || cloneCamera == null)
-        {
-            return;
-        }
         playerMove_input.x = leftStickVal.x;
         playerMove_input.z = leftStickVal.y;
         Vector3 cameraForward = Vector3.Scale(cloneCamera.transform.forward, new Vector3(1, 0, 1)).normalized;
         Vector3 moveForward = cameraForward * playerMove_input.z + cloneCamera.transform.right * playerMove_input.x;
         movedir = moveForward * moveSpeed;
-        movedirY += Physics.gravity.y * Time.deltaTime;
-        Vector3 globaldir = transform.TransformDirection(movedir);
-        characterController.Move(new Vector3(movedir.x, movedirY, movedir.z) * Time.deltaTime);
+        movedirY += Physics.gravity.y * Time.deltaTime * 2;
+        if(!gameOption.Duplicate_openOption)
+        {
+            characterController.Move(new Vector3(movedir.x, movedirY, movedir.z) * Time.deltaTime);
+            //キャラクターの回転
+            if(cameraForward != Vector3.zero && lockOnMode)
+            {
+                Quaternion QL = Quaternion.LookRotation(cameraForward);
+                transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
+            }
+            else if(moveForward != Vector3.zero && !lockOnMode)
+            {
+                Quaternion QL = Quaternion.LookRotation(moveForward);
+                transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
+            }
 
-        if(characterController.isGrounded)
+            if(!raycastCS.metamorphosisflag)
+            {
+                const int animationcontrol_upper_limit = -11;
+                const int animationcontrol_lower_limit = -5;
+                if(movedirY > animationcontrol_lower_limit || movedirY < animationcontrol_upper_limit)
+                {
+                    isfall = true;
+                    characterController.height = animator.GetFloat("ColliderHeight");
+                    characterController.center = new Vector3(characterController.center.x, animator.GetFloat("ColliderCenter"), characterController.center.z);
+                }
+
+                if(!isfall)
+                {
+                    characterController.height = defaultColliderHeight;
+                    characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
+                }
+
+            }
+        }
+        else
+        {
+            characterController.Move(new Vector3(0, movedirY, 0) * Time.deltaTime);
+        }
+
+        if(characterController.isGrounded &&!gameOption.Duplicate_openOption)
         {
             movedirY = gravity;
             isfall = false;
@@ -99,32 +133,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
                 movedirY = JumpPower;
             }
         }
-        if(!raycastCS.metamorphosisflag)
-        {
-            if(movedirY > -5 || movedirY <= -10)
-            {
-                isfall = true;
-                characterController.height = animator.GetFloat("ColliderHeight");
-                characterController.center = new Vector3(characterController.center.x, animator.GetFloat("ColliderCenter"), characterController.center.z);
-            }
 
-            if(!isfall)
-            {
-                characterController.height = defaultColliderHeight;
-                characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
-            }
-        }
-        //キャラクターの回転
-        if(cameraForward != Vector3.zero && lockOnMode)
-        {
-            Quaternion QL = Quaternion.LookRotation(cameraForward);
-            transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
-        }
-        else if(moveForward != Vector3.zero&& !lockOnMode)
-        {
-            Quaternion QL = Quaternion.LookRotation(moveForward);
-            transform.rotation = Quaternion.Lerp(transform.rotation, QL, 10.0f * Time.deltaTime);
-        }
         animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
     }
@@ -134,14 +143,12 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         var metamorphosis_center = 0.3f;
         var metamorphosis_radius = 0.2f;
         var metamorphosis_height = 0.2f;
-        var litleJump = 4;
         if(state != oldstate)
         {
             oldstate = state;
             switch(state)
             {
                 case (int) player_state.defaultMode:
-                    movedirY = litleJump;
                     characterController.center = new Vector3(characterController.center.x, defaultColliderCenter, characterController.center.z);
                     characterController.radius = defaultColliderRadius;
                     characterController.height = defaultColliderHeight;
@@ -170,12 +177,12 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         if(hit.gameObject.CompareTag("ReSet"))
         {
             transform.position = Vector3.zero;
-            gameManager.change_sky(0);
+            gameManager.change_skyBox();
         }
         if(hit.gameObject.CompareTag("changeArea"))
         {
            transform.position =  hit.gameObject.GetComponent<transformStage>().transformPos.position;
-            gameManager.change_sky(1);
+           gameManager.change_sky(0);
         }
     }
 

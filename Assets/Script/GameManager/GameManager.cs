@@ -5,9 +5,12 @@ using UnityEngine.InputSystem;
 
 public class GameManager :MonoBehaviour
 {
-    public Image cursor;
-    public PlayerController playerController;
-    public Material[] skyboxs;
+    [SerializeField] public Image cursor;
+    [SerializeField] public PlayerController playerController;
+    [SerializeField] Material[] Stage_skyboxs;
+    [SerializeField] Material daySkybox;    // 昼用SkyBoxマテリアル
+    [SerializeField] Material eveningSkybox; // 夕方用SkyBoxマテリアル
+    [SerializeField] Material nightSkybox;   // 夜用SkyBoxマテリアル
     private const string gamepad = "Gamepad";
     private const string keyboard_mouse = "Keyboard&Mouse";
     private Gamepad gamepad_connection;
@@ -17,6 +20,7 @@ public class GameManager :MonoBehaviour
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        change_skyBox();
     }
 
     private void Update()
@@ -41,16 +45,27 @@ public class GameManager :MonoBehaviour
                 Debug.Log(playerController.Duplicate_PlayerInput.currentControlScheme.ToString());
             }
         }
-
-        if(Input.GetKeyDown(KeyCode.Escape))
-        {
-            Cursor.visible = true;
-            Cursor.lockState = CursorLockMode.None;
-        }
     }
     public void change_sky(int i)
     {
-        RenderSettings.skybox = skyboxs[i];
+        RenderSettings.skybox = Stage_skyboxs[i];
+    }
+    public void change_skyBox()
+    {
+        float hour = System.DateTime.Now.Hour;
+
+        if(hour >= 6 && hour < 18)
+        {
+            RenderSettings.skybox = daySkybox;
+        }
+        else if(hour >= 18 && hour < 21)
+        {
+            RenderSettings.skybox = eveningSkybox;
+        }
+        else
+        {
+            RenderSettings.skybox = nightSkybox;
+        }
     }
 
     public Gamepad Duplicate_gamepad_connection
