@@ -48,6 +48,8 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         {
             PhotonNetwork.ConnectUsingSettings();
         }
+        Cursor.visible = true;
+        Cursor.lockState = CursorLockMode.None;
     }
 
     //UI表示、非表示
@@ -118,7 +120,6 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public void LeavRoom()
     {
         PhotonNetwork.LeaveRoom();
-
         CloseUI();
         loadingText.text = "退出中...";
         loadingPanel.SetActive(true);

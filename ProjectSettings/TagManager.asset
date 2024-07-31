@@ -5,11 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - metamorphosis
-  - candy
   - ground
-  - Bullet
   - ReSet
   - changeArea
+  - show_through
   layers:
   - Default
   - TransparentFX

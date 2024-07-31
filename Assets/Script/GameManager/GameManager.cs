@@ -13,6 +13,8 @@ public class GameManager :MonoBehaviour
     [SerializeField] Material nightSkybox;   // 夜用SkyBoxマテリアル
     private const string gamepad = "Gamepad";
     private const string keyboard_mouse = "Keyboard&Mouse";
+    private bool operation_gamepad;
+    private bool operation_keyboard_mouse;
     private Gamepad gamepad_connection;
     private Keyboard keyboard_connection;
 
@@ -38,11 +40,13 @@ public class GameManager :MonoBehaviour
         {
             if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == gamepad)
             {
-                Debug.Log(playerController.Duplicate_PlayerInput.currentControlScheme.ToString());
+                operation_gamepad = true;
+                operation_keyboard_mouse = false;
             }
             else if(playerController.Duplicate_PlayerInput.currentControlScheme.ToString() == keyboard_mouse)
             {
-                Debug.Log(playerController.Duplicate_PlayerInput.currentControlScheme.ToString());
+                operation_gamepad = false;
+                operation_keyboard_mouse = true;
             }
         }
     }
@@ -65,6 +69,21 @@ public class GameManager :MonoBehaviour
         else
         {
             RenderSettings.skybox = nightSkybox;
+        }
+    }
+
+    public bool Duplicate_operation_gamepad
+    {
+        get
+        {
+            return operation_gamepad;
+        }
+    }
+    public bool Duplicate_operation_keyboard_mouse
+    {
+        get
+        {
+            return operation_keyboard_mouse;
         }
     }
 

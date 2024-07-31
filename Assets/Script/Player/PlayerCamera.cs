@@ -23,6 +23,7 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     private const float min_distanceToPlayerM = 5.0f;
     private const float max_distanceToPlayerM = 7.0f;
     private const float max_slidedistanceM = 1.0f;
+    private const string target_tag = "show_through";
     private Camera camera;
     private GameOption gameOption;
 
@@ -37,7 +38,7 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         {
             camera.targetDisplay = 1;
         }
-        renderers = FindObjectsOfType<Renderer>();
+        GetRenderersByTag(target_tag);
         gameOption = FindObjectOfType<GameOption>();
     }
     private void Update()
@@ -47,7 +48,18 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         if(!gameOption.Duplicate_openOption)
             lockOn();
     }
+    // タグで検索して、そのタグを持つすべてのゲームオブジェクトを取得
+    // それぞれのゲームオブジェクトからRendererコンポーネントを取得
+    private void GetRenderersByTag(string tag)
+    {
+        GameObject[] gameObjectsWithTag = GameObject.FindGameObjectsWithTag(tag);
+        renderers = new Renderer[gameObjectsWithTag.Length];
 
+        for(int i = 0; i < gameObjectsWithTag.Length; i++)
+        {
+            renderers[i] = gameObjectsWithTag[i].GetComponent<Renderer>();
+        }
+    }
 
     // Update is called once per frame
     private void LateUpdate()

@@ -176,8 +176,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     {
         if(hit.gameObject.CompareTag("ReSet"))
         {
-            transform.position = Vector3.zero;
-            gameManager.change_skyBox();
+            ResetPos();
         }
         if(hit.gameObject.CompareTag("changeArea"))
         {
@@ -198,6 +197,14 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
             characterController.center = center;
             characterController.detectCollisions = detectCollisions;
         }
+    }
+
+    public void ResetPos()
+    {
+        state = (int) player_state.defaultMode;
+        raycastCS.ResetPlayerMesh();
+        transform.position = Vector3.zero;
+        gameManager.change_skyBox();
     }
 
     private void OnMove(InputValue var)

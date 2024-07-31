@@ -104,17 +104,17 @@ public class RayCastCS : MonoBehaviourPun
 
             if(return_Default_KB.wasPressedThisFrame || return_Default_GP.wasPressedThisFrame)
             {
-                rayHitObject = null;
                 ResetPlayerMesh();
-                PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
-                playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
-                metamorphosisFlag = false;
             }
         }
     }
 
     public void ResetPlayerMesh()
     {
+        metamorphosisFlag = false;
+        rayHitObject = null;
+        PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
+        playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
         photonView.RPC("ResetMesh", RpcTarget.All);
     }
 
