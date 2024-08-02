@@ -45,7 +45,6 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         gameManager = FindObjectOfType<GameManager>();
         gameOption = FindObjectOfType<GameOption>();
         oldstate = state;
-
         if(!photonView.IsMine)
         {
             Destroy(playerInput);
@@ -54,7 +53,12 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private void Start()
     {
         namePlate = nameText.transform.parent.gameObject;
+        if(photonView.IsMine)
+        {
+            PhotonNetwork.LocalPlayer.TagObject = GetComponent<PhotonView>();
+        }
     }
+
     private void Update()
     {
         if(!photonView.IsMine||cloneCamera == null)
@@ -122,6 +126,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         else
         {
             characterController.Move(new Vector3(0, movedirY, 0) * Time.deltaTime);
+            moveForward = Vector3.zero;
         }
 
         if(characterController.isGrounded &&!gameOption.Duplicate_openOption)
@@ -133,8 +138,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
                 movedirY = JumpPower;
             }
         }
-
-        animator.SetFloat("movespeed", moveForward.magnitude, 0.1f, Time.deltaTime);
+        animator.SetFloat("movespeed",moveForward.magnitude, 0.1f, Time.deltaTime);
         animator.SetBool("isfall", isfall);
     }
 
@@ -198,14 +202,23 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
             characterController.detectCollisions = detectCollisions;
         }
     }
-
     public void ResetPos()
     {
-        state = (int) player_state.defaultMode;
+        if(raycastCS.metamorphosisflag)
+        {
+            transform.position = Vector3.zero;
+        }
+        else
+        {
+            characterController.detectCollisions = false;
+            Vector3 moveDirection = Vector3.zero - characterController.transform.position;
+            characterController.Move(moveDirection);
+        }
         raycastCS.ResetPlayerMesh();
-        transform.position = Vector3.zero;
         gameManager.change_skyBox();
+        Debug.Log("初期座標にワープ");
     }
+
 
     private void OnMove(InputValue var)
     {

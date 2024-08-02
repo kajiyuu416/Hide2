@@ -138,8 +138,8 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * RotationSensitivity;
         var lookAt = target.transform.position + Vector3.up * heightM;
         float upper_limit = 0.1f;
-        float lower_limit = -0.8f;
-        float lockOn_upper_limit = -0.6f;
+        float lower_limit = -0.9f;
+        float lockOn_upper_limit = -0.8f;
         float lockOn_lower_limit = 0.5f;
 
         if(!gameOption.Duplicate_openOption)

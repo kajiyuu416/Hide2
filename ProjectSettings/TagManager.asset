@@ -9,6 +9,7 @@ TagManager:
   - ReSet
   - changeArea
   - show_through
+  - NameTag
   layers:
   - Default
   - TransparentFX

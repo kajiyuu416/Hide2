@@ -5,15 +5,11 @@ using UnityEngine.EventSystems;
 
 public class GameOption : MonoBehaviourPunCallbacks
 {
-    [SerializeField] GameObject OptionPanel;
-    [SerializeField] GameObject volume_leveling_Button;
-    private GameManager gameManager;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private GameObject OptionPanel;
+    [SerializeField] private GameObject volume_leveling_Button;
+    private const string titleScene = "Title";
     private bool openOption;
-    private string titleScene = "Title";
-    private void Start()
-    {
-        gameManager = FindObjectOfType<GameManager>();
-    }
     private void Update()
     {
         var changeGP = gameManager.Duplicate_gamepad_connection.startButton;
@@ -74,10 +70,8 @@ public class GameOption : MonoBehaviourPunCallbacks
     {
         PhotonView localPhotonView = PhotonNetwork.LocalPlayer.TagObject as PhotonView;
         GameObject playerObject = localPhotonView.gameObject;
-        playerObject.transform.position = Vector3.zero;
-        Debug.Log("playerObject");
-        //PlayerController pc = playerObject.GetComponent<PlayerController>();
-        //pc.ResetPos();
+        playerObject.GetComponent<PlayerController>().ResetPos();
+        CloseUI();
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {

@@ -8,6 +8,7 @@ public class GameManager :MonoBehaviour
     [SerializeField] public Image cursor;
     [SerializeField] public PlayerController playerController;
     [SerializeField] Material[] Stage_skyboxs;
+    [SerializeField] Material morningSkybox;    // 朝用SkyBoxマテリアル
     [SerializeField] Material daySkybox;    // 昼用SkyBoxマテリアル
     [SerializeField] Material eveningSkybox; // 夕方用SkyBoxマテリアル
     [SerializeField] Material nightSkybox;   // 夜用SkyBoxマテリアル
@@ -17,11 +18,16 @@ public class GameManager :MonoBehaviour
     private bool operation_keyboard_mouse;
     private Gamepad gamepad_connection;
     private Keyboard keyboard_connection;
+    private Light light;
+    private Color light_harf_color;
+    private Material currentSkybox;
 
     private void Start()
     {
         Cursor.visible = false;
         Cursor.lockState = CursorLockMode.Locked;
+        light = GetComponentInChildren<Light>();
+        light_harf_color = new Color(light.color.r * 0.5f, light.color.g * 0.5f, light.color.b * 0.5f, light.color.a);
         change_skyBox();
     }
 
@@ -54,22 +60,38 @@ public class GameManager :MonoBehaviour
     {
         RenderSettings.skybox = Stage_skyboxs[i];
     }
+    //時刻に応じてskyboxの変更とLightの値を変更する
+    //変更の感覚 4時～8時、8時～16時、16時～20時、20時～4時
     public void change_skyBox()
     {
         float hour = System.DateTime.Now.Hour;
-
-        if(hour >= 6 && hour < 18)
+        if(hour >= 4 && hour < 8)
         {
-            RenderSettings.skybox = daySkybox;
+            SetSkybox(morningSkybox);
+            Color modifiedColor = light_harf_color;
+            light.color = modifiedColor;
         }
-        else if(hour >= 18 && hour < 21)
+        else if(hour >= 8 && hour < 16)
         {
-            RenderSettings.skybox = eveningSkybox;
+            SetSkybox(daySkybox);
+            light.color = Color.white;
         }
-        else
+        else if(hour >= 16 && hour < 20)
         {
-            RenderSettings.skybox = nightSkybox;
+            SetSkybox(eveningSkybox);
+            Color modifiedColor = light_harf_color;
+            light.color = modifiedColor;
         }
+        else 
+        {
+            SetSkybox(nightSkybox);
+            light.color = Color.black;
+        }
+    }
+    private void SetSkybox(Material newSkybox)
+    {
+        RenderSettings.skybox = newSkybox;
+        DynamicGI.UpdateEnvironment();
     }
 
     public bool Duplicate_operation_gamepad
