@@ -5,11 +5,10 @@ TagManager:
   serializedVersion: 2
   tags:
   - metamorphosis
-  - ground
   - ReSet
   - changeArea
-  - show_through
   - NameTag
+  - wall
   layers:
   - Default
   - TransparentFX
@@ -19,7 +18,7 @@ TagManager:
   - UI
   - Player
   - penetration
-  - 
+  - groundLayer
   - 
   - 
   - 

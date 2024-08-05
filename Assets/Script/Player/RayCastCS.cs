@@ -34,7 +34,6 @@ public class RayCastCS : MonoBehaviourPun
         meshCollider = GetComponent<MeshCollider>();
         skinnedMesh = GetComponentInChildren<SkinnedMeshRenderer>();
         defaultMesh = GetComponentInChildren<SkinnedMeshRenderer>().sharedMesh;
-
     }
     // Rayを生成・Rayを投射・Rayが衝突したオブジェクトのタグを比較し、条件と一致するものだったら
     private void Update()
@@ -51,7 +50,7 @@ public class RayCastCS : MonoBehaviourPun
     {
         if(playerController.Duplicate_lockOnMode)
         {
-            var changeGP = gameManager.Duplicate_gamepad_connection.buttonEast;
+            var changeGP = gameManager.Duplicate_gamepad_connection.rightShoulder;
 
             gameManager.cursor.enabled = true;
             Ray ray = cam.ScreenPointToRay(center);

@@ -210,10 +210,10 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         }
         else
         {
-            characterController.detectCollisions = false;
             Vector3 moveDirection = Vector3.zero - characterController.transform.position;
             characterController.Move(moveDirection);
         }
+        characterController.detectCollisions = false;
         raycastCS.ResetPlayerMesh();
         gameManager.change_skyBox();
         Debug.Log("初期座標にワープ");
