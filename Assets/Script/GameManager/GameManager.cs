@@ -20,7 +20,6 @@ public class GameManager :MonoBehaviour
     private Keyboard keyboard_connection;
     private Light light;
     private Color light_harf_color;
-    private Material currentSkybox;
 
     private void Start()
     {
@@ -70,22 +69,26 @@ public class GameManager :MonoBehaviour
             SetSkybox(morningSkybox);
             Color modifiedColor = light_harf_color;
             light.color = modifiedColor;
+            AudioManager.Instance.MorningBGM();
         }
         else if(hour >= 8 && hour < 16)
         {
             SetSkybox(daySkybox);
             light.color = Color.white;
+            AudioManager.Instance.DayBGM();
         }
         else if(hour >= 16 && hour < 20)
         {
             SetSkybox(eveningSkybox);
             Color modifiedColor = light_harf_color;
             light.color = modifiedColor;
+            AudioManager.Instance.Eveningbgm();
         }
         else 
         {
             SetSkybox(nightSkybox);
             light.color = Color.black;
+            AudioManager.Instance.NightBGM();
         }
     }
     private void SetSkybox(Material newSkybox)

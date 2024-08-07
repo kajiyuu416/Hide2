@@ -16,12 +16,12 @@ public class RayCastCS : MonoBehaviourPun
     private GameOption gameOption;
     private MeshFilter target_MeshFilter;
     private MeshFilter meshFilter;
-    private MeshCollider target_MeshCollider;
     private MeshCollider meshCollider;
     private Mesh defaultMesh;
     private SkinnedMeshRenderer skinnedMesh;
     private bool metamorphosisFlag = false;
-    private const float raydis = 10.0f;
+    private bool morphable = false;
+    private const float raydis = 15.0f;
     private const string metamorphosisTag = "metamorphosis";
     private Vector3 center = new Vector3(Screen.width/2,Screen.height/2,0);
 
@@ -43,15 +43,15 @@ public class RayCastCS : MonoBehaviourPun
             return;
         }
         if(!gameOption.Duplicate_openOption)
+        {
             Player_metamorphosis();
+        }
     }
 
     private void Player_metamorphosis()
     {
         if(playerController.Duplicate_lockOnMode)
         {
-            var changeGP = gameManager.Duplicate_gamepad_connection.rightShoulder;
-
             gameManager.cursor.enabled = true;
             Ray ray = cam.ScreenPointToRay(center);
             RaycastHit raycastHit;
@@ -60,39 +60,45 @@ public class RayCastCS : MonoBehaviourPun
                 if(raycastHit.collider.CompareTag(metamorphosisTag))
                 {
                     gameManager.cursor.color = Color.red;
+                    morphable = true;
+                    Debug.Log(raycastHit.collider.gameObject.name + "に変身できます");
+
                 }
                 else
                 {
                     gameManager.cursor.color = Color.blue;
+                    morphable = false;
+                    Debug.Log("現在変身出来ません");
                 }
             }
             Debug.DrawRay(ray.origin, ray.direction * raydis, Color.green);
-            //オブジェクトへ変身
-            if(Input.GetMouseButtonDown(0) || changeGP.wasPressedThisFrame)
-            {
-                Ray _ray = cam.ScreenPointToRay(center);
-                RaycastHit hit;
-                if(Physics.Raycast(_ray, out hit, raydis))
-                {
-                    if(hit.collider.CompareTag(metamorphosisTag) && rayHitObject != hit.collider.gameObject)
-                    {
-                        rayHitObject = hit.collider.gameObject;
-                        target_MeshFilter = rayHitObject.GetComponent<MeshFilter>();
-                        target_MeshCollider = rayHitObject.GetComponent<MeshCollider>();
-                        ChangeMesh();
-                        PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
-                        playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
-                        metamorphosisFlag = true;
-                    }
-                    Debug.DrawRay(_ray.origin, _ray.direction * raydis, Color.red);
-                }
-            }
         }
-        else if(!playerController.Duplicate_lockOnMode)
+        else
         {
             gameManager.cursor.enabled = false;
             gameManager.cursor.color = Color.blue;
+            morphable = false;
+        }
 
+        var changeGP = gameManager.Duplicate_gamepad_connection.rightShoulder;
+        //オブジェクトへ変身
+        if(Input.GetMouseButtonDown(0) || changeGP.wasPressedThisFrame)
+        {
+            Ray _ray = cam.ScreenPointToRay(center);
+            RaycastHit hit;
+            if(Physics.Raycast(_ray, out hit, raydis))
+            {
+                if(hit.collider.CompareTag(metamorphosisTag) && rayHitObject != hit.collider.gameObject && morphable)
+                {
+                    rayHitObject = hit.collider.gameObject;
+                    target_MeshFilter = rayHitObject.GetComponent<MeshFilter>();
+                    ChangeMesh();
+                    PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
+                    playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
+                    metamorphosisFlag = true;
+                }
+                Debug.DrawRay(_ray.origin, _ray.direction * raydis, Color.red);
+            }
         }
 
         //変身解除
@@ -254,6 +260,13 @@ public class RayCastCS : MonoBehaviourPun
         {
             metamorphosisFlag = value;
         } 
+    }
+    public bool Duplicate_morphable
+    {
+        get
+        {
+            return morphable;
+        }
     }
 }
 

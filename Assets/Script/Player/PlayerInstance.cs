@@ -7,7 +7,8 @@ using Photon.Realtime;
 
 public class PlayerInstance : Photon.Pun.MonoBehaviourPun
 {
-    private GameManager gameManager;
+    [SerializeField] private GameManager gameManager;
+    [SerializeField] private ChangeUI changeUI;
 
     private void Start()
     {
@@ -16,7 +17,6 @@ public class PlayerInstance : Photon.Pun.MonoBehaviourPun
         Quaternion currentRotation = transform.rotation;
         GameObject pobj = PhotonNetwork.Instantiate("character", position, currentRotation);
         GameObject cobj = PhotonNetwork.Instantiate("camera", Vector3.zero, currentRotation);
-        gameManager = FindObjectOfType<GameManager>();
         StartCoroutine(WaitForInitialization(pobj,cobj));
 
         if(pobj.GetComponent<PhotonView>().IsMine)
@@ -40,6 +40,7 @@ public class PlayerInstance : Photon.Pun.MonoBehaviourPun
         Camera pcam = cobj.GetComponent<Camera>();
         pobj.GetPhotonView().RPC("SetName", RpcTarget.AllBuffered, PhotonNetwork.NickName);
         gameManager.playerController = playercon;
+        changeUI.raycastCS = raycs;
         raycs.cam = pcam;
         playercon.cloneCamera = pcam;
         raycs.playerController = playercon;
