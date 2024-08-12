@@ -94,6 +94,7 @@ public class RayCastCS : MonoBehaviourPun
                     target_MeshFilter = rayHitObject.GetComponent<MeshFilter>();
                     ChangeMesh();
                     PhotonNetwork.Instantiate("StarLight", transform.position, Quaternion.identity);
+                    AudioManager.Instance.MakeOverSE();
                     playerController.Duplicate_state = (int) PlayerController.player_state.metamorphosisMode;
                     metamorphosisFlag = true;
                 }
@@ -121,7 +122,8 @@ public class RayCastCS : MonoBehaviourPun
             playerController.Duplicate_state = (int) PlayerController.player_state.defaultMode;
             metamorphosisFlag = false;
             rayHitObject = null;
-            PhotonNetwork.Instantiate("Smoke", transform.position, Quaternion.identity);
+            PhotonNetwork.Instantiate("Smoke", transform.position,transform.rotation);
+            AudioManager.Instance.MakeOver_UnlockSE();
         }
         photonView.RPC("ResetMesh", RpcTarget.All);
     }

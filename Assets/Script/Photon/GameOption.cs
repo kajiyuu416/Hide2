@@ -42,11 +42,13 @@ public class GameOption : MonoBehaviourPunCallbacks
             {
                 OpenOptionPanel();
                 optionUI.SetActive(false);
+                AudioManager.Instance.OpenOptionSE();
             }
             else
             {
                 CloseUI();
                 optionUI.SetActive(true);
+                AudioManager.Instance.CloseOptionSE();
             }
         }
 
@@ -125,6 +127,7 @@ public class GameOption : MonoBehaviourPunCallbacks
         CloseUI();
         optionPanel.SetActive(true);
         openOption = true;
+        AudioManager.Instance.OpenOptionSE();
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
     }
@@ -136,6 +139,7 @@ public class GameOption : MonoBehaviourPunCallbacks
         openOption = true;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        AudioManager.Instance.OpenOptionSE();
     }
     public void OpenVolumeSettingPanel()
     {
@@ -145,11 +149,13 @@ public class GameOption : MonoBehaviourPunCallbacks
         openOption = true;
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        AudioManager.Instance.OpenOptionSE();
     }
     public void Push_Button_Camera_Left_Right_Change()
     {
         camera_Left_and_Right_Flip = !camera_Left_and_Right_Flip;
         TextMeshProUGUI buttonText = camera_Left_and_Right_Flip_Button.GetComponentInChildren<TextMeshProUGUI>();
+        AudioManager.Instance.SelectSE();
         if(camera_Left_and_Right_Flip == true)
         {
             buttonText.text = "ON";
@@ -166,6 +172,7 @@ public class GameOption : MonoBehaviourPunCallbacks
     {
         camera_Upside_Down_Flip = !camera_Upside_Down_Flip;
         TextMeshProUGUI buttonText = camera_Upside_Down_Flip_Button.GetComponentInChildren<TextMeshProUGUI>();
+        AudioManager.Instance.SelectSE();
         if(camera_Upside_Down_Flip == true)
         {
             buttonText.text = "ON";
@@ -198,6 +205,7 @@ public class GameOption : MonoBehaviourPunCallbacks
         PhotonView localPhotonView = PhotonNetwork.LocalPlayer.TagObject as PhotonView;
         GameObject playerObject = localPhotonView.gameObject;
         playerObject.GetComponent<PlayerController>().ResetPos();
+        PhotonNetwork.Instantiate("Smoke", playerObject.transform.position, playerObject.transform.rotation);
         CloseUI();
     }
     public override void OnPlayerEnteredRoom(Player newPlayer)

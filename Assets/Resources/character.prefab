@@ -2416,6 +2416,7 @@ GameObject:
   - component: {fileID: 7854468942416415186}
   - component: {fileID: 7854468942416415198}
   - component: {fileID: -3250988860609210950}
+  - component: {fileID: 46209677491390729}
   - component: {fileID: 5693806081168853461}
   - component: {fileID: 5693806081168853463}
   - component: {fileID: 4317156580422194981}
@@ -2580,6 +2581,14 @@ MonoBehaviour:
   m_DefaultActionMap: Player
   m_SplitScreenIndex: -1
   m_Camera: {fileID: 0}
+--- !u!81 &46209677491390729
+AudioListener:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7371122997515637605}
+  m_Enabled: 1
 --- !u!114 &5693806081168853461
 MonoBehaviour:
   m_ObjectHideFlags: 0

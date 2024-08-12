@@ -4,7 +4,6 @@ using UnityEngine.InputSystem;
 using Photon.Pun;
 using UnityEngine.UI;
 using TMPro;
-using UnityEngine.InputSystem.XR;
 public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
     private float moveSpeed = 8.0f;
@@ -31,6 +30,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private PlayerInput playerInput;
     private GameObject namePlate;
     public TextMeshProUGUI nameText;
+    private AudioListener audioListener;
     public enum player_state
     {
         defaultMode, metamorphosisMode
@@ -41,6 +41,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         animator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
         playerInput = GetComponent<PlayerInput>();
+        audioListener = GetComponent<AudioListener>();
         raycastCS = GetComponent<RayCastCS>();
         gameManager = FindObjectOfType<GameManager>();
         gameOption = FindObjectOfType<GameOption>();
@@ -48,6 +49,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         if(!photonView.IsMine)
         {
             Destroy(playerInput);
+            Destroy(audioListener);
         }
     }
     private void Start()
@@ -216,6 +218,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         characterController.detectCollisions = false;
         raycastCS.ResetPlayerMesh();
         gameManager.change_skyBox();
+        AudioManager.Instance.ResetSeSE();
         Debug.Log("初期座標にワープ");
     }
 

@@ -9,8 +9,18 @@ public class AudioManager : MonoBehaviour
     [SerializeField] AudioSource day_bgm;
     [SerializeField] AudioSource evening_bgm;
     [SerializeField] AudioSource night_bgm;
+    [SerializeField] AudioClip openOptionSe;
+    [SerializeField] AudioClip closeOptionSe;
+    [SerializeField] AudioClip resetSe;
+    [SerializeField] AudioClip selectSe;
+    [SerializeField] AudioClip makeoverSe;
+    [SerializeField] AudioClip makeover_UnlockSe;
+    public AudioClip launch_fireworkSe;
+    public AudioClip blast_fireworkSe;
     [SerializeField] Slider bgmSlider;
     [SerializeField] Slider seSlider;
+    private AudioSource selectSeAudioSource;
+    private GameObject seObj;
     public static AudioManager Instance
     {
         get; private set;
@@ -30,6 +40,8 @@ public class AudioManager : MonoBehaviour
         bgmSlider.value = bgmVoium;
         audioMixer.GetFloat("SE_Volume", out float seVoium);
         seSlider.value = seVoium;
+        seObj = transform.GetChild(1).gameObject;
+        selectSeAudioSource = seObj.transform.GetChild(0).gameObject.GetComponent<AudioSource>();
     }
     public void MorningBGM()
     {
@@ -55,4 +67,37 @@ public class AudioManager : MonoBehaviour
     {
         audioMixer.SetFloat("SE_Volume", volume);
     }
+    public void OpenOptionSE()
+    {
+        selectSeAudioSource.PlayOneShot(openOptionSe);
+    }
+    public void CloseOptionSE()
+    {
+        selectSeAudioSource.PlayOneShot(closeOptionSe);
+    }   
+    public void ResetSeSE()
+    {
+        selectSeAudioSource.PlayOneShot(resetSe);
+    }
+    public void SelectSE()
+    {
+        selectSeAudioSource.PlayOneShot(selectSe);
+    }
+    public void MakeOverSE()
+    {
+        selectSeAudioSource.PlayOneShot(makeoverSe);
+    }
+    public void MakeOver_UnlockSE()
+    {
+        selectSeAudioSource.PlayOneShot(makeover_UnlockSe);
+    }
+    public void Launch_FireworkSe()
+    {
+        selectSeAudioSource.PlayOneShot(launch_fireworkSe);
+    }
+    public void Blast_FireworkSe()
+    {
+        selectSeAudioSource.PlayOneShot(blast_fireworkSe);
+    }
+
 }
