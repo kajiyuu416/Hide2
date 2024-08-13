@@ -49,6 +49,7 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
         Cursor.visible = true;
         Cursor.lockState = CursorLockMode.None;
+        AudioManager.Instance.MorningBGM();
     }
 
     //UIï\é¶ÅAîÒï\é¶
