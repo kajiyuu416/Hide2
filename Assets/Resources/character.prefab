@@ -2700,7 +2700,7 @@ MonoBehaviour:
   ground_footstepSound: {fileID: 8300000, guid: 7c065a14317fdcf47907b4e6be374242, type: 3}
   grassy_footstepSound: {fileID: 8300000, guid: 8c3941e6869adc8409f8d6e5c61d8899, type: 3}
   playerController: {fileID: 5693806081168853461}
-  reg: {fileID: 4363031672079120310}
+  origin: {fileID: 4363031672079120310}
   LayerMasks:
     serializedVersion: 2
     m_Bits: 768

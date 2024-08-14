@@ -2,34 +2,28 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class footstep : MonoBehaviour
+public class playerSE : MonoBehaviour
 {
     [SerializeField] AudioSource audioSource;
     [SerializeField] AudioClip ground_footstepSound;
     [SerializeField] AudioClip grassy_footstepSound;
     [SerializeField] PlayerController playerController;
-    [SerializeField] Transform reg;
+    [SerializeField] Transform origin;
     [SerializeField] LayerMask LayerMasks;
     private string layerNameToCompare1 = "groundLayer";
     private string layerNameToCompare2 = "grassyLayer";
     private float raydis = 1.0f;
-    int currentLayer;
-    private void Start()
-    {
-        int groundLayer = LayerMask.NameToLayer(layerNameToCompare1);
-        currentLayer = groundLayer;
-    }
+    private int currentLayer;
     private void FixedUpdate()
     {
-        if(Physics.Raycast(reg.transform.position, Vector3.down, out RaycastHit hit, raydis, LayerMasks))
+        if(Physics.Raycast(origin.transform.position, Vector3.down, out RaycastHit hit, raydis, LayerMasks))
         {
-            currentLayer = hit.collider.gameObject.layer;
-            Debug.Log(currentLayer + "ÉåÉCÉÑÅ[Ç…ïœçX");
+            if(currentLayer!= hit.collider.gameObject.layer)
+            {
+                currentLayer = hit.collider.gameObject.layer;
+            }
         }
-        Debug.Log("currentLayer" + currentLayer);
-        Debug.DrawRay(reg.transform.position, Vector3.down * raydis, Color.red);
     }
-
     public void PlayFootstepSound()
     {
         int groundLayer = LayerMask.NameToLayer(layerNameToCompare1);
@@ -44,15 +38,12 @@ public class footstep : MonoBehaviour
                     audioSource.Stop();
                     audioSource.PlayOneShot(ground_footstepSound);
                 }
-
-                if(currentLayer == grassyLayer)
+                else if(currentLayer == grassyLayer)
                 {
                     audioSource.Stop();
                     audioSource.PlayOneShot(grassy_footstepSound);
                 }
-
             }
-
         }
         else
         {
