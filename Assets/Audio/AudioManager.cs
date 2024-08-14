@@ -9,6 +9,7 @@ public class AudioManager : MonoBehaviour
     [SerializeField] AudioSource day_bgm;
     [SerializeField] AudioSource evening_bgm;
     [SerializeField] AudioSource night_bgm;
+    [SerializeField] AudioSource title_bgm;
     [SerializeField] AudioClip openOptionSe;
     [SerializeField] AudioClip closeOptionSe;
     [SerializeField] AudioClip resetSe;
@@ -58,6 +59,10 @@ public class AudioManager : MonoBehaviour
     public void NightBGM()
     {
         night_bgm.Play();
+    }
+    public void TitleBGM()
+    {
+        title_bgm.Play();
     }
     public void SetBGM(float volume)
     {

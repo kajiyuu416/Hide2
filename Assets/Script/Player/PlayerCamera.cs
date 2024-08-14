@@ -10,6 +10,10 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
     [SerializeField] private LayerMask obstructingLayer;
     [SerializeField] private Shader transparentShader;
     [SerializeField] private CinemachineVirtualCamera virtualCamera;
+    [SerializeField] private float upper_limit = 0.9f;
+    [SerializeField] private float lower_limit = -0.9f;
+    [SerializeField] private float lockOn_upper_limit = -0.9f;
+    [SerializeField] private float lockOn_lower_limit = 0.9f;
     private Color transparentColor = new Color(1, 1, 1, 0.5f); // îºìßñæÇÃêF
     private Shader originalShader;
     private Renderer[] renderers;
@@ -139,10 +143,6 @@ public class PlayerCamera : Photon.Pun.MonoBehaviourPun
         var rotX = playerController.Duplicate_rightStickVal.x * Time.deltaTime * rotationSensitivity;
         var rotY = playerController.Duplicate_rightStickVal.y * Time.deltaTime * rotationSensitivity;
         var lookAt = target.transform.position + Vector3.up * heightM;
-        float upper_limit = 0.9f;
-        float lower_limit = -0.9f;
-        float lockOn_upper_limit = -0.9f;
-        float lockOn_lower_limit = 0.9f;
 
         if(!gameOption.Duplicate_openOption)
         {

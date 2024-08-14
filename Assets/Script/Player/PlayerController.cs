@@ -231,6 +231,20 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     {
         rightStickVal = var.Get<Vector2>();
     }
+    public CharacterController Duplicate_characterController
+    {
+        get
+        {
+            return characterController;
+        }
+    }
+    public Vector3 Duplicate_playerMove_input
+    {
+        get
+        {
+            return playerMove_input;
+        }
+    }
 
     public Vector2 Duplicate_rightStickVal
     {

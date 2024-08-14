@@ -101,6 +101,10 @@ MonoBehaviour:
     m_Bits: 384
   transparentShader: {fileID: 4800000, guid: ca5f765124af36c4d8f6fceba999e39e, type: 3}
   virtualCamera: {fileID: 0}
+  upper_limit: 0.9
+  lower_limit: -0.9
+  lockOn_upper_limit: -0.9
+  lockOn_lower_limit: 0.9
 --- !u!114 &6206119981821542942
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,7 +230,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_CollideAgainst:
     serializedVersion: 2
-    m_Bits: 256
+    m_Bits: 768
   m_IgnoreTag: Player
   m_TransparentLayers:
     serializedVersion: 2
