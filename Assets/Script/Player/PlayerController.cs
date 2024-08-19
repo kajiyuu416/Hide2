@@ -1,8 +1,8 @@
+using System.Collections.Generic;
 using System.Collections;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using Photon.Pun;
-using UnityEngine.UI;
 using TMPro;
 public class PlayerController : Photon.Pun.MonoBehaviourPun
 {
@@ -28,9 +28,10 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     private Animator animator;
     public Camera cloneCamera;
     private PlayerInput playerInput;
-    private GameObject namePlate;
     public TextMeshProUGUI nameText;
     private AudioListener audioListener;
+    private List<GameObject> nameplates;
+
     public enum player_state
     {
         defaultMode, metamorphosisMode
@@ -54,13 +55,23 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     }
     private void Start()
     {
-        namePlate = nameText.transform.parent.gameObject;
+        StartCoroutine(WaitForSeconds());
         if(photonView.IsMine)
         {
             PhotonNetwork.LocalPlayer.TagObject = GetComponent<PhotonView>();
         }
     }
+    private IEnumerator WaitForSeconds()
+    {
+        yield return new WaitForSeconds(1.0f);
 
+        GameObject[] nameplates = GameObject.FindGameObjectsWithTag("NameTag");
+        this.nameplates = new List<GameObject>();
+        foreach(GameObject obj in nameplates)
+        {
+            this.nameplates.Add(obj);
+        }
+    }
     private void Update()
     {
         if(!photonView.IsMine||cloneCamera == null)
@@ -76,7 +87,13 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         {
             return;
         }
-        namePlate.transform.rotation = cloneCamera.transform.rotation;
+        if(nameplates != null)
+        {
+            foreach(GameObject plates in nameplates)
+            {
+                plates.transform.rotation = cloneCamera.transform.rotation;
+            }
+        }
     }
     [PunRPC]
     public void SetName(string name)
@@ -187,7 +204,7 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
         if(hit.gameObject.CompareTag("changeArea"))
         {
            transform.position =  hit.gameObject.GetComponent<transformStage>().transformPos.position;
-           gameManager.change_sky(0);
+           hit.gameObject.GetComponent<transformStage>().PlayMusic();
         }
     }
 
@@ -206,22 +223,25 @@ public class PlayerController : Photon.Pun.MonoBehaviourPun
     }
     public void ResetPos()
     {
-        if(raycastCS.metamorphosisflag)
-        {
-            transform.position = Vector3.zero;
-        }
-        else
-        {
-            Vector3 moveDirection = Vector3.zero - characterController.transform.position;
-            characterController.Move(moveDirection);
-        }
+        transform.position = Vector3.zero;
         characterController.detectCollisions = false;
         raycastCS.ResetPlayerMesh();
-        gameManager.change_skyBox();
+        AudioManager.Instance.StopBGM_SE();
         AudioManager.Instance.ResetSeSE();
+        gameManager.change_skyBox();
         Debug.Log("初期座標にワープ");
     }
-
+    public void leave()
+    {
+        RemoveLastElement(nameplates);
+    }
+    private void RemoveLastElement(List<GameObject> list)
+    {
+        if(list.Count > 1)
+        {
+            list.RemoveAt(list.Count - 1);
+        }
+    }
 
     private void OnMove(InputValue var)
     {

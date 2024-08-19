@@ -16,7 +16,9 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     [SerializeField] GameObject roomButtonContent;
     [SerializeField] GameObject playerNameContent;
     [SerializeField] GameObject nameInputPanel;
+    [SerializeField] GameObject cautionImagePanel;
     [SerializeField] GameObject startButton;
+    [SerializeField] GameObject playGameButton;
     [SerializeField] TextMeshProUGUI loadingText;
     [SerializeField] TextMeshProUGUI RoomName;
     [SerializeField] TextMeshProUGUI errorText;
@@ -62,13 +64,21 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         erroePanel.SetActive(false);
         roomListPanel.SetActive(false);
         nameInputPanel.SetActive(false);
+        cautionImagePanel.SetActive(false);
     }
     public void LobbyMenu()
     {
         CloseUI();
         Buttons.SetActive(true);
     }
-
+    public void Warningindication()
+    {
+        cautionImagePanel.SetActive(true);
+    }
+    public void CloseWarningImage()
+    {
+        cautionImagePanel.SetActive(false);
+    }
     public override void OnConnectedToMaster()
     {
         PhotonNetwork.JoinLobby();
@@ -277,12 +287,14 @@ public class PhotonManager : MonoBehaviourPunCallbacks
     public override void OnPlayerEnteredRoom(Player newPlayer)
     {
         playerTextGeneration(newPlayer);
+        AudioManager.Instance.EnteringroomSE();
         Debug.Log("Playerが新たに入室しました。");
     }
     //プレイヤーが退室した時に呼ばれる関数(プレイヤー情報の更新)
     public override void OnPlayerLeftRoom(Player otherPlayer)
     {
         GetAllPlayer();
+        AudioManager.Instance.LeaveroomSE();
         Debug.Log("Playerが退室しました。");
     }
     //ホストのみゲームが開始できる表ボタンの表示
@@ -306,10 +318,22 @@ public class PhotonManager : MonoBehaviourPunCallbacks
         }
     }
     //ゲーム開始時呼ばれる関数
+    public void PlayeGame_confirmation()
+    {
+        int playercount = PhotonNetwork.PlayerList.Length;
+        if(playercount < 2)
+        {
+            Warningindication();
+            return;
+        }
+        PlayeGame();
+    }
     public void PlayeGame()
     {
-        //ホストと同じシーンを読み込み
         PhotonNetwork.IsMessageQueueRunning = false;
         PhotonNetwork.LoadLevel(PlayScene);
+        playGameButton.GetComponent<Button>().interactable = false;
+        startButton.GetComponent<Button>().interactable = false;
     }
+
 }

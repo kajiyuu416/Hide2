@@ -10,12 +10,17 @@ public class AudioManager : MonoBehaviour
     [SerializeField] AudioSource evening_bgm;
     [SerializeField] AudioSource night_bgm;
     [SerializeField] AudioSource title_bgm;
+    [SerializeField] AudioSource stage_bgm1;
+    [SerializeField] AudioSource stage_bgm2;
+    [SerializeField] AudioSource stage_bgm3;
     [SerializeField] AudioClip openOptionSe;
     [SerializeField] AudioClip closeOptionSe;
     [SerializeField] AudioClip resetSe;
     [SerializeField] AudioClip selectSe;
     [SerializeField] AudioClip makeoverSe;
     [SerializeField] AudioClip makeover_UnlockSe;
+    [SerializeField] AudioClip entering_roomSE;
+    [SerializeField] AudioClip leave_SE;
     public AudioClip launch_fireworkSe;
     public AudioClip blast_fireworkSe;
     [SerializeField] Slider bgmSlider;
@@ -64,6 +69,17 @@ public class AudioManager : MonoBehaviour
     {
         title_bgm.Play();
     }
+    public void StopBGM_SE()
+    {
+        morning_bgm.Stop();
+        day_bgm.Stop();
+        evening_bgm.Stop();
+        night_bgm.Stop();
+        stage_bgm1.Stop();
+        stage_bgm2.Stop();
+        stage_bgm3.Stop();
+        selectSeAudioSource.Stop();
+    }
     public void SetBGM(float volume)
     {
         audioMixer.SetFloat("BGM_Volume", volume);
@@ -103,6 +119,14 @@ public class AudioManager : MonoBehaviour
     public void Blast_FireworkSe()
     {
         selectSeAudioSource.PlayOneShot(blast_fireworkSe);
+    }
+    public void EnteringroomSE()
+    {
+        selectSeAudioSource.PlayOneShot(entering_roomSE);
+    }
+    public void LeaveroomSE()
+    {
+        selectSeAudioSource.PlayOneShot(leave_SE);
     }
 
 }

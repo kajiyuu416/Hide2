@@ -1,11 +1,12 @@
 using UnityEngine.UI;
 using UnityEngine;
 using UnityEngine.InputSystem;
-public class GameManager :MonoBehaviour
+using Photon.Pun;
+using Photon.Realtime;
+public class GameManager : MonoBehaviourPunCallbacks
 {
     [SerializeField] public Image cursor;
     [SerializeField] public PlayerController playerController;
-    [SerializeField] Material[] Stage_skyboxs;
     [SerializeField] Material morningSkybox;    // 朝用SkyBoxマテリアル
     [SerializeField] Material daySkybox;    // 昼用SkyBoxマテリアル
     [SerializeField] Material eveningSkybox; // 夕方用SkyBoxマテリアル
@@ -53,10 +54,6 @@ public class GameManager :MonoBehaviour
             }
         }
     }
-    public void change_sky(int i)
-    {
-        RenderSettings.skybox = Stage_skyboxs[i];
-    }
     //時刻に応じてskyboxの変更とLightの値を変更する
     //変更の感覚 4時～8時、8時～16時、16時～20時、20時～4時
     public void change_skyBox()
@@ -93,6 +90,18 @@ public class GameManager :MonoBehaviour
     {
         RenderSettings.skybox = newSkybox;
         DynamicGI.UpdateEnvironment();
+    }
+    public override void OnPlayerEnteredRoom(Player newPlayer)
+    {
+        Debug.Log("Playerが新たに入室しました。");
+        AudioManager.Instance.EnteringroomSE();
+    }
+    //プレイヤーが退室した時に呼ばれる関数(プレイヤー情報の更新)
+    public override void OnPlayerLeftRoom(Player otherPlayer)
+    {
+        AudioManager.Instance.LeaveroomSE();
+        playerController.leave();
+        Debug.Log("Playerが退室しました。");
     }
 
     public bool Duplicate_operation_gamepad

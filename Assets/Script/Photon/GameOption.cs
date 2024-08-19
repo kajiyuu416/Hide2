@@ -208,15 +208,7 @@ public class GameOption : MonoBehaviourPunCallbacks
         PhotonNetwork.Instantiate("Smoke", playerObject.transform.position, playerObject.transform.rotation);
         CloseUI();
     }
-    public override void OnPlayerEnteredRoom(Player newPlayer)
-    {
-        Debug.Log("Playerが新たに入室しました。");
-    }
-    //プレイヤーが退室した時に呼ばれる関数(プレイヤー情報の更新)
-    public override void OnPlayerLeftRoom(Player otherPlayer)
-    {
-        Debug.Log("Playerが退室しました。");
-    }
+
     public bool Duplicate_openOption
     {
         get
